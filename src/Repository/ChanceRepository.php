@@ -7,7 +7,6 @@ use CampaignBundle\Entity\Campaign;
 use CampaignBundle\Entity\Chance;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
-use DoctrineEnhanceBundle\Repository\CommonRepositoryAware;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
@@ -18,7 +17,6 @@ use Symfony\Component\Security\Core\User\UserInterface;
  */
 class ChanceRepository extends ServiceEntityRepository
 {
-    use CommonRepositoryAware;
 
     public function __construct(ManagerRegistry $registry)
     {

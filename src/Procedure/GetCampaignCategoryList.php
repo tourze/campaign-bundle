@@ -51,7 +51,7 @@ class GetCampaignCategoryList extends CacheableProcedure
 
     protected function getCacheDuration(JsonRpcRequest $request): int
     {
-        return MINUTE_IN_SECONDS * 30;
+        return 60 * 30;
     }
 
     protected function getCacheTags(JsonRpcRequest $request): iterable
