@@ -14,7 +14,6 @@ class CampaignBundle extends Bundle implements BundleDependencyInterface
         return [
             \Tourze\DoctrineSnowflakeBundle\DoctrineSnowflakeBundle::class => ['all' => true],
             \Tourze\Symfony\CronJob\CronJobBundle::class => ['all' => true],
-            \AntdCpBundle\AntdCpBundle::class => ['all' => true],
         ];
     }
 }
