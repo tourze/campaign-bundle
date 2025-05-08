@@ -7,6 +7,7 @@ use CampaignBundle\Repository\CampaignRepository;
 use CampaignBundle\Repository\ChanceRepository;
 use Carbon\Carbon;
 use Doctrine\ORM\EntityManagerInterface;
+use Monolog\Attribute\WithMonologChannel;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -30,6 +31,7 @@ use Tourze\JsonRPCLogBundle\Attribute\Log;
 #[MethodExpose('RequestCampaignChance')]
 #[IsGranted('IS_AUTHENTICATED_FULLY')]
 #[Log]
+#[WithMonologChannel('procedure')]
 class RequestCampaignChance extends LockableProcedure
 {
     #[MethodParam('活动代号')]
@@ -39,7 +41,7 @@ class RequestCampaignChance extends LockableProcedure
         private readonly CampaignRepository $campaignRepository,
         private readonly ChanceRepository $chanceRepository,
         private readonly Engine $engine,
-        private readonly LoggerInterface $procedureLogger,
+        private readonly LoggerInterface $logger,
         private readonly Security $security,
         private readonly EntityManagerInterface $entityManager,
     ) {
@@ -81,7 +83,7 @@ class RequestCampaignChance extends LockableProcedure
 
             $checkRes = false;
             try {
-                $this->procedureLogger->debug('执行活动配置中的表达式', [
+                $this->logger->debug('执行活动配置中的表达式', [
                     'expression' => $campaign->getRequestExpression(),
                     ...$values,
                 ]);
@@ -89,7 +91,7 @@ class RequestCampaignChance extends LockableProcedure
             } catch (ApiException $exception) {
                 throw $exception;
             } catch (\Throwable $exception) {
-                $this->procedureLogger->error('执行表达式分发资格时发生异常', [
+                $this->logger->error('执行表达式分发资格时发生异常', [
                     'exception' => $exception,
                     'values' => $values,
                     'expression' => $campaign->getRequestExpression(),
