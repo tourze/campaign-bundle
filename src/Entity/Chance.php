@@ -2,10 +2,10 @@
 
 namespace CampaignBundle\Entity;
 
-use AppBundle\Entity\BizUser;
 use CampaignBundle\Repository\ChanceRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Attribute\Groups;
 use Tourze\Arrayable\ApiArrayInterface;
 use Tourze\DoctrineIndexedBundle\Attribute\IndexColumn;
@@ -107,7 +107,7 @@ class Chance implements ApiArrayInterface
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
-    private ?BizUser $user = null;
+    private ?UserInterface $user = null;
 
     #[ORM\ManyToOne(inversedBy: 'chances')]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
@@ -204,12 +204,12 @@ class Chance implements ApiArrayInterface
         return $this;
     }
 
-    public function getUser(): ?BizUser
+    public function getUser(): ?UserInterface
     {
         return $this->user;
     }
 
-    public function setUser(?BizUser $user): self
+    public function setUser(?UserInterface $user): self
     {
         $this->user = $user;
 

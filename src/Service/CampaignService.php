@@ -45,7 +45,6 @@ class CampaignService
         private readonly ?SkuRepository $skuRepository,
         private readonly ?SpuRepository $spuRepository,
         private readonly ?OfferChanceRepository $offerChanceRepository,
-        private readonly ?OfferSkuRepository $offerSkuRepository,
         private readonly CreditManager $creditManager,
         private readonly ?CurrencyService $currencyService,
         private readonly ?AccountService $accountService,
@@ -53,7 +52,7 @@ class CampaignService
     ) {
     }
 
-    public function checkLimit(BizUser|UserInterface $user, Limit $limit): bool
+    public function checkLimit(UserInterface $user, Limit $limit): bool
     {
         // 看这个人是不是有可以使用的机会
         if (LimitType::CHANCE === $limit->getType()) {
@@ -77,7 +76,7 @@ class CampaignService
         return true;
     }
 
-    public function consumeLimit(BizUser|UserInterface $user, Limit $limit): bool
+    public function consumeLimit(UserInterface $user, Limit $limit): bool
     {
         // 消耗一个机会
         if (LimitType::CHANCE === $limit->getType()) {
@@ -101,7 +100,7 @@ class CampaignService
     }
 
     #[Transactional]
-    public function rewardUser(BizUser|UserInterface $user, Award $award): Reward
+    public function rewardUser(UserInterface $user, Award $award): Reward
     {
         $campaign = $award->getCampaign();
         // 判断总数量

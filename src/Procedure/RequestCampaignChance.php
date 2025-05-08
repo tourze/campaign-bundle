@@ -2,7 +2,6 @@
 
 namespace CampaignBundle\Procedure;
 
-use AppBundle\Entity\BizUser;
 use CampaignBundle\Entity\Chance;
 use CampaignBundle\Repository\CampaignRepository;
 use CampaignBundle\Repository\ChanceRepository;

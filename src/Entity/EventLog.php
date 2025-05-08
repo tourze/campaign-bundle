@@ -2,10 +2,10 @@
 
 namespace CampaignBundle\Entity;
 
-use AppBundle\Entity\BizUser;
 use CampaignBundle\Repository\EventLogRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Serializer\Attribute\Ignore;
 use Tourze\Arrayable\AdminArrayInterface;
@@ -61,9 +61,9 @@ class EventLog implements AdminArrayInterface
 
     #[Filterable(label: '用户')]
     #[ListColumn(title: '用户')]
-    #[ORM\ManyToOne(targetEntity: BizUser::class)]
+    #[ORM\ManyToOne(targetEntity: UserInterface::class)]
     #[ORM\JoinColumn(onDelete: 'CASCADE')]
-    private ?BizUser $user = null;
+    private ?UserInterface $user = null;
 
     #[Filterable]
     #[Groups(['restful_read'])]
@@ -80,7 +80,6 @@ class EventLog implements AdminArrayInterface
     #[ListColumn(order: 98, sorter: true)]
     #[ExportColumn]
     #[CreateTimeColumn]
-    #[Groups(['restful_read', 'admin_curd'])]
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true, options: ['comment' => '创建时间'])]
     private ?\DateTimeInterface $createTime = null;
 
@@ -137,12 +136,12 @@ class EventLog implements AdminArrayInterface
         return $this->updatedBy;
     }
 
-    public function getUser(): ?BizUser
+    public function getUser(): ?UserInterface
     {
         return $this->user;
     }
 
-    public function setUser(?BizUser $user): self
+    public function setUser(?UserInterface $user): self
     {
         $this->user = $user;
 

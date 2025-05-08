@@ -2,11 +2,11 @@
 
 namespace CampaignBundle\Entity;
 
-use AppBundle\Entity\BizUser;
 use CampaignBundle\Enum\AwardType;
 use CampaignBundle\Repository\RewardRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Tourze\Arrayable\ApiArrayInterface;
 use Tourze\DoctrineIndexedBundle\Attribute\IndexColumn;
 use Tourze\DoctrineIpBundle\Attribute\CreateIpColumn;
@@ -114,9 +114,9 @@ class Reward implements \Stringable, ApiArrayInterface
     #[ORM\JoinColumn(onDelete: 'SET NULL')]
     private ?Award $award = null;
 
-    #[ORM\ManyToOne(targetEntity: BizUser::class)]
+    #[ORM\ManyToOne(targetEntity: UserInterface::class)]
     #[ORM\JoinColumn(onDelete: 'CASCADE')]
-    private ?BizUser $user = null;
+    private ?UserInterface $user = null;
 
     #[FormField(span: 5)]
     #[ORM\Column(type: Types::STRING, length: 30, enumType: AwardType::class, options: ['comment' => '权益类型'])]
@@ -246,12 +246,12 @@ class Reward implements \Stringable, ApiArrayInterface
         return $this;
     }
 
-    public function getUser(): ?BizUser
+    public function getUser(): ?UserInterface
     {
         return $this->user;
     }
 
-    public function setUser(?BizUser $user): self
+    public function setUser(?UserInterface $user): self
     {
         $this->user = $user;
 
