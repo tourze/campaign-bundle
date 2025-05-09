@@ -2,7 +2,6 @@
 
 namespace CampaignBundle\Repository;
 
-use AppBundle\Entity\BizUser;
 use CampaignBundle\Entity\Campaign;
 use CampaignBundle\Entity\Chance;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -28,10 +27,6 @@ class ChanceRepository extends ServiceEntityRepository
      */
     public function countTotalChanceByCampaignAndUser(Campaign $campaign, UserInterface $user): int
     {
-        if (!($user instanceof BizUser)) {
-            return 0;
-        }
-
         $res = $this->createQueryBuilder('a')
             ->where('a.user = :user AND a.campaign = :campaign')
             ->setParameter('user', $user)

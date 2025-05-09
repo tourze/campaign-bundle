@@ -2,7 +2,6 @@
 
 namespace CampaignBundle\Service;
 
-use AppBundle\Entity\BizUser;
 use AppBundle\Service\CreditManager;
 use AppBundle\Service\UserTagService;
 use CampaignBundle\Entity\Award;
