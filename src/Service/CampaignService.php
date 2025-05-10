@@ -2,7 +2,6 @@
 
 namespace CampaignBundle\Service;
 
-use AppBundle\Service\CreditManager;
 use AppBundle\Service\UserTagService;
 use CampaignBundle\Entity\Award;
 use CampaignBundle\Entity\Limit;
@@ -10,7 +9,6 @@ use CampaignBundle\Entity\Reward;
 use CampaignBundle\Enum\AwardLimitType;
 use CampaignBundle\Enum\AwardType;
 use CampaignBundle\Enum\LimitType;
-use CampaignBundle\Repository\AwardRepository;
 use CampaignBundle\Repository\ChanceRepository;
 use CampaignBundle\Repository\RewardRepository;
 use Carbon\Carbon;
@@ -36,7 +34,6 @@ class CampaignService
     public function __construct(
         private readonly ChanceRepository $chanceRepository,
         private readonly RewardRepository $rewardRepository,
-        private readonly AwardRepository $awardRepository,
         private readonly EntityManagerInterface $entityManager,
         private readonly LoggerInterface $logger,
         private readonly ?CouponService $couponService,
@@ -44,7 +41,6 @@ class CampaignService
         private readonly ?SkuRepository $skuRepository,
         private readonly ?SpuRepository $spuRepository,
         private readonly ?OfferChanceRepository $offerChanceRepository,
-        private readonly CreditManager $creditManager,
         private readonly ?CurrencyService $currencyService,
         private readonly ?AccountService $accountService,
         private readonly ?TransactionService $transactionService,
@@ -239,7 +235,7 @@ class CampaignService
 
         if (AwardType::CREDIT === $award->getType()) {
             // 给积分，point取奖项里的值
-            $integralName = $this->creditManager->getOneCredit();
+            $integralName = $_ENV['DEFAULT_CREDIT_CURRENCY_CODE'] ?? 'CREDIT';
             $currency = $this->currencyService->getCurrencyByCode($integralName);
             $inAccount = $this->accountService->getAccountByUser($user, $currency);
             $remark = $_ENV['CAMPAIGN_AWARD_CREDIT_REMARK'] ?? $award->getCampaign()->getName();
