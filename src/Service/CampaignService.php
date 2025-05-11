@@ -2,7 +2,6 @@
 
 namespace CampaignBundle\Service;
 
-use AppBundle\Service\UserTagService;
 use CampaignBundle\Entity\Award;
 use CampaignBundle\Entity\Limit;
 use CampaignBundle\Entity\Reward;
@@ -28,6 +27,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Uid\Uuid;
 use Tourze\JsonRPC\Core\Exception\ApiException;
 use Tourze\Symfony\AopDoctrineBundle\Attribute\Transactional;
+use Tourze\UserTagContracts\TagServiceInterface;
 
 class CampaignService
 {
@@ -37,7 +37,7 @@ class CampaignService
         private readonly EntityManagerInterface $entityManager,
         private readonly LoggerInterface $logger,
         private readonly ?CouponService $couponService,
-        private readonly UserTagService $userTagService,
+        private readonly TagServiceInterface $userTagService,
         private readonly ?SkuRepository $skuRepository,
         private readonly ?SpuRepository $spuRepository,
         private readonly ?OfferChanceRepository $offerChanceRepository,

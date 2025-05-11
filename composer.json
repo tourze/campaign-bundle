@@ -48,7 +48,8 @@
     "tourze/symfony-aop-doctrine-bundle": "0.0.*",
     "tourze/symfony-cron-job-bundle": "0.1.*",
     "tourze/symfony-ecol-bundle": "0.1.*",
-    "tourze/text-manage-bundle": "0.0.*"
+    "tourze/text-manage-bundle": "0.0.*",
+    "tourze/user-tag-contracts": "0.0.*"
   },
   "require-dev": {
     "phpstan/phpstan": "^2.1",
