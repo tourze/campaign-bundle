@@ -27,7 +27,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Uid\Uuid;
 use Tourze\JsonRPC\Core\Exception\ApiException;
 use Tourze\Symfony\AopDoctrineBundle\Attribute\Transactional;
-use Tourze\UserTagContracts\TagServiceInterface;
+use Tourze\UserTagContracts\TagLoaderInterface;
 
 class CampaignService
 {
@@ -37,7 +37,7 @@ class CampaignService
         private readonly EntityManagerInterface $entityManager,
         private readonly LoggerInterface $logger,
         private readonly ?CouponService $couponService,
-        private readonly TagServiceInterface $userTagService,
+        private readonly TagLoaderInterface $userTagService,
         private readonly ?SkuRepository $skuRepository,
         private readonly ?SpuRepository $spuRepository,
         private readonly ?OfferChanceRepository $offerChanceRepository,
