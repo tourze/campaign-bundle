@@ -16,74 +16,28 @@ use Tourze\DoctrineIndexedBundle\Attribute\IndexColumn;
 use Tourze\DoctrineIpBundle\Attribute\CreateIpColumn;
 use Tourze\DoctrineIpBundle\Attribute\UpdateIpColumn;
 use Tourze\DoctrineSnowflakeBundle\Attribute\SnowflakeColumn;
-use Tourze\DoctrineTimestampBundle\Attribute\CreateTimeColumn;
-use Tourze\DoctrineTimestampBundle\Attribute\UpdateTimeColumn;
+use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 use Tourze\DoctrineTrackBundle\Attribute\TrackColumn;
 use Tourze\DoctrineUserBundle\Attribute\CreatedByColumn;
 use Tourze\DoctrineUserBundle\Attribute\UpdatedByColumn;
 use Tourze\EasyAdmin\Attribute\Action\Creatable;
 use Tourze\EasyAdmin\Attribute\Action\CurdAction;
-use Tourze\EasyAdmin\Attribute\Action\Deletable;
 use Tourze\EasyAdmin\Attribute\Action\Editable;
-use Tourze\EasyAdmin\Attribute\Column\BoolColumn;
-use Tourze\EasyAdmin\Attribute\Column\ExportColumn;
-use Tourze\EasyAdmin\Attribute\Column\ListColumn;
 use Tourze\EasyAdmin\Attribute\Column\PictureColumn;
-use Tourze\EasyAdmin\Attribute\Field\FormField;
 use Tourze\EasyAdmin\Attribute\Field\ImagePickerField;
-use Tourze\EasyAdmin\Attribute\Filter\Filterable;
-use Tourze\EasyAdmin\Attribute\Filter\Keyword;
-use Tourze\EasyAdmin\Attribute\Permission\AsPermission;
 
-#[Deletable]
 #[Creatable(drawerWidth: 800)]
 #[Editable(drawerWidth: 800)]
-#[AsPermission(title: '活动管理')]
 #[ORM\Entity(repositoryClass: CampaignRepository::class)]
 #[ORM\Table(name: 'campaign_main', options: ['comment' => '活动管理'])]
 class Campaign implements AdminArrayInterface
 {
-    #[Filterable]
-    #[IndexColumn]
-    #[ListColumn(order: 98, sorter: true)]
-    #[ExportColumn]
-    #[CreateTimeColumn]
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true, options: ['comment' => '创建时间'])]
-    private ?\DateTimeInterface $createTime = null;
-
-    #[UpdateTimeColumn]
-    #[ListColumn(order: 99, sorter: true)]
-    #[Filterable]
-    #[ExportColumn]
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true, options: ['comment' => '更新时间'])]
-    private ?\DateTimeInterface $updateTime = null;
-
-    public function setCreateTime(?\DateTimeInterface $createdAt): void
-    {
-        $this->createTime = $createdAt;
-    }
-
-    public function getCreateTime(): ?\DateTimeInterface
-    {
-        return $this->createTime;
-    }
-
-    public function setUpdateTime(?\DateTimeInterface $updateTime): void
-    {
-        $this->updateTime = $updateTime;
-    }
-
-    public function getUpdateTime(): ?\DateTimeInterface
-    {
-        return $this->updateTime;
-    }
+    use TimestampableAware;
 
     /**
      * order值大的排序靠前。有效的值范围是[0, 2^32].
      */
     #[IndexColumn]
-    #[FormField]
-    #[ListColumn(order: 95, sorter: true)]
     #[ORM\Column(type: Types::INTEGER, nullable: true, options: ['default' => '0', 'comment' => '次序值'])]
     private ?int $sortNumber = 0;
 
@@ -106,8 +60,6 @@ class Campaign implements AdminArrayInterface
         ];
     }
 
-    #[ListColumn(order: -1)]
-    #[ExportColumn]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: Types::INTEGER, options: ['comment' => 'ID'])]
@@ -129,66 +81,45 @@ class Campaign implements AdminArrayInterface
     #[ORM\Column(length: 128, nullable: true, options: ['comment' => '更新时IP'])]
     private ?string $updatedFromIp = null;
 
-    #[BoolColumn]
     #[IndexColumn]
     #[TrackColumn]
     #[ORM\Column(type: Types::BOOLEAN, nullable: true, options: ['comment' => '有效', 'default' => 0])]
-    #[ListColumn(order: 97)]
-    #[FormField(order: 97)]
     private ?bool $valid = false;
 
-    #[ListColumn(title: '所属目录')]
-    #[FormField(title: '所属目录')]
     #[ORM\ManyToOne(targetEntity: Category::class, inversedBy: 'campaigns')]
     private ?Category $category = null;
 
-    #[FormField(span: 5)]
-    #[Keyword]
     #[Groups(['restful_read'])]
-    #[ListColumn]
     #[SnowflakeColumn(prefix: 'CMP')]
     #[ORM\Column(type: Types::STRING, length: 100, unique: true, options: ['comment' => '代号'])]
     private ?string $code = null;
 
-    #[FormField(span: 9)]
-    #[Keyword]
     #[Groups(['restful_read'])]
-    #[ListColumn]
     #[ORM\Column(type: Types::STRING, length: 120, options: ['comment' => '活动名'])]
     private ?string $name = null;
 
-    #[Keyword]
     #[Groups(['restful_read'])]
-    #[FormField(span: 10)]
     #[ORM\Column(length: 120, nullable: true, options: ['comment' => '副标题'])]
     private ?string $subtitle = null;
 
     #[ImagePickerField]
     #[PictureColumn]
     #[Groups(['restful_read'])]
-    #[ListColumn]
-    #[FormField(span: 4)]
     #[ORM\Column(length: 255, nullable: true, options: ['comment' => '缩略图'])]
     private ?string $thumbUrl = null;
 
-    #[FormField(span: 8)]
     #[Groups(['restful_read'])]
-    #[ListColumn(sorter: true)]
     #[ORM\Column(type: Types::DATETIME_MUTABLE, options: ['comment' => '开始时间'])]
     private ?\DateTimeInterface $startTime = null;
 
-    #[FormField(span: 9)]
     #[Groups(['restful_read'])]
-    #[ListColumn(sorter: true)]
     #[ORM\Column(type: Types::DATETIME_MUTABLE, options: ['comment' => '结束时间'])]
     private ?\DateTimeInterface $endTime = null;
 
     #[Groups(['restful_read'])]
-    #[FormField]
     #[ORM\Column(type: Types::JSON, nullable: true, options: ['comment' => '标签'])]
     private ?array $tags = null;
 
-    #[FormField]
     #[ORM\Column(type: Types::TEXT, nullable: true, options: ['comment' => '入口地址'])]
     private ?string $entryUrl = null;
 
@@ -198,7 +129,6 @@ class Campaign implements AdminArrayInterface
     #[Ignore]
     #[CurdAction(label: '权益配置', drawerWidth: 1200)]
     #[Groups(['restful_read'])]
-    #[ListColumn(title: '权益配置')]
     #[ORM\OneToMany(mappedBy: 'campaign', targetEntity: Award::class, cascade: ['persist'], fetch: 'EXTRA_LAZY', orphanRemoval: true)]
     private Collection $awards;
 
@@ -211,14 +141,12 @@ class Campaign implements AdminArrayInterface
     private Collection $eventLogs;
 
     #[ImagePickerField]
-    #[FormField(span: 6)]
     #[ORM\Column(type: Types::STRING, length: 1000, nullable: true, options: ['comment' => '分享图'])]
     private ?string $shareImg = null;
 
     /**
      * @LongTextField()
      */
-    #[FormField(span: 18)]
     #[ORM\Column(type: Types::STRING, length: 1000, nullable: true, options: ['comment' => '分享文案'])]
     private ?string $shareTitle = null;
 
@@ -239,12 +167,9 @@ class Campaign implements AdminArrayInterface
     #[ORM\Column(type: Types::TEXT, nullable: true, options: ['comment' => '请求机会时执行表达式'])]
     private ?string $requestExpression = null;
 
-    #[BoolColumn]
-    #[ListColumn]
     #[ORM\Column(nullable: false, options: ['comment' => '是否推荐'])]
     private ?bool $recommend = false;
 
-    #[ListColumn(title: '属性')]
     #[CurdAction(label: '属性', drawerWidth: 1000)]
     #[ORM\OneToMany(mappedBy: 'campaign', targetEntity: Attribute::class)]
     private Collection $attributes;

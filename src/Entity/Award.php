@@ -13,67 +13,18 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Serializer\Attribute\Ignore;
 use Tourze\Arrayable\AdminArrayInterface;
-use Tourze\DoctrineIndexedBundle\Attribute\IndexColumn;
 use Tourze\DoctrineIpBundle\Attribute\CreateIpColumn;
 use Tourze\DoctrineIpBundle\Attribute\UpdateIpColumn;
-use Tourze\DoctrineTimestampBundle\Attribute\CreateTimeColumn;
-use Tourze\DoctrineTimestampBundle\Attribute\UpdateTimeColumn;
+use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 use Tourze\DoctrineUserBundle\Attribute\CreatedByColumn;
 use Tourze\DoctrineUserBundle\Attribute\UpdatedByColumn;
-use Tourze\EasyAdmin\Attribute\Action\Creatable;
-use Tourze\EasyAdmin\Attribute\Action\Deletable;
-use Tourze\EasyAdmin\Attribute\Action\Editable;
-use Tourze\EasyAdmin\Attribute\Column\ExportColumn;
-use Tourze\EasyAdmin\Attribute\Column\ListColumn;
-use Tourze\EasyAdmin\Attribute\Field\FormField;
-use Tourze\EasyAdmin\Attribute\Filter\Filterable;
-use Tourze\EasyAdmin\Attribute\Permission\AsPermission;
 
-#[AsPermission(title: '权益奖励配置')]
-#[Deletable]
-#[Editable]
-#[Creatable]
 #[ORM\Entity(repositoryClass: AwardRepository::class)]
 #[ORM\Table(name: 'campaign_award', options: ['comment' => '权益奖励配置'])]
 class Award implements \Stringable, AdminArrayInterface
 {
-    #[Filterable]
-    #[IndexColumn]
-    #[ListColumn(order: 98, sorter: true)]
-    #[ExportColumn]
-    #[CreateTimeColumn]
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true, options: ['comment' => '创建时间'])]
-    private ?\DateTimeInterface $createTime = null;
+    use TimestampableAware;
 
-    #[UpdateTimeColumn]
-    #[ListColumn(order: 99, sorter: true)]
-    #[Filterable]
-    #[ExportColumn]
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true, options: ['comment' => '更新时间'])]
-    private ?\DateTimeInterface $updateTime = null;
-
-    public function setCreateTime(?\DateTimeInterface $createdAt): void
-    {
-        $this->createTime = $createdAt;
-    }
-
-    public function getCreateTime(): ?\DateTimeInterface
-    {
-        return $this->createTime;
-    }
-
-    public function setUpdateTime(?\DateTimeInterface $updateTime): void
-    {
-        $this->updateTime = $updateTime;
-    }
-
-    public function getUpdateTime(): ?\DateTimeInterface
-    {
-        return $this->updateTime;
-    }
-
-    #[ListColumn(order: -1)]
-    #[ExportColumn]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: Types::INTEGER, options: ['comment' => 'ID'])]
@@ -103,26 +54,18 @@ class Award implements \Stringable, AdminArrayInterface
     /**
      * @var string 这里事件的意思是，触发了这个事件就会得到指定的奖励
      */
-    #[ListColumn]
-    #[FormField]
     #[Groups(['restful_read'])]
     #[ORM\Column(type: Types::STRING, length: 100, options: ['comment' => '事件'])]
     private string $event = 'join';
 
-    #[ListColumn]
-    #[FormField(span: 6)]
     #[Groups(['restful_read'])]
     #[ORM\Column(type: Types::STRING, length: 30, enumType: AwardType::class, options: ['comment' => '权益类型'])]
     private AwardType $type;
 
-    #[ListColumn]
-    #[FormField(span: 8)]
     #[Groups(['restful_read'])]
     #[ORM\Column(type: Types::STRING, length: 100, options: ['comment' => '权益ID'])]
     private string $value;
 
-    #[ListColumn]
-    #[FormField]
     #[ORM\Column(type: Types::STRING, length: 255, nullable: true, options: ['comment' => '备注'])]
     private ?string $remark = null;
 
@@ -131,23 +74,15 @@ class Award implements \Stringable, AdminArrayInterface
      *
      * @var Collection<Limit>
      */
-    #[ListColumn(title: '限制规则')]
-    #[FormField(title: '限制规则')]
     #[ORM\OneToMany(mappedBy: 'award', targetEntity: Limit::class, cascade: ['persist'], orphanRemoval: true)]
     private Collection $limits;
 
-    #[FormField(span: 8, required: true)]
-    #[ListColumn(sorter: true)]
     #[ORM\Column(type: Types::INTEGER, options: ['comment' => '总数量'])]
     private ?int $prizeQuantity = 0;
 
-    #[ListColumn]
-    #[FormField]
     #[ORM\Column(length: 100, nullable: true, enumType: AwardLimitType::class, options: ['comment' => '领取限制类型'])]
     private ?AwardLimitType $awardLimitType = AwardLimitType::BUY_TOTAL;
 
-    #[ListColumn]
-    #[FormField]
     #[ORM\Column(nullable: true, options: ['comment' => '领取限制次数', 'default' => 1])]
     private ?int $times = null;
 
