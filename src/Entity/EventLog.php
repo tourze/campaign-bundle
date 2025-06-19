@@ -16,10 +16,8 @@ use Tourze\DoctrineSnowflakeBundle\Service\SnowflakeIdGenerator;
 use Tourze\DoctrineTimestampBundle\Attribute\CreateTimeColumn;
 use Tourze\DoctrineUserBundle\Attribute\CreatedByColumn;
 use Tourze\DoctrineUserBundle\Attribute\UpdatedByColumn;
-use Tourze\EasyAdmin\Attribute\Action\BatchDeletable;
 use Tourze\EasyAdmin\Attribute\Filter\Filterable;
 
-#[BatchDeletable]
 #[ORM\Entity(repositoryClass: EventLogRepository::class, readOnly: true)]
 #[ORM\Table(name: 'campaign_event_log', options: ['comment' => '参与日志'])]
 class EventLog implements AdminArrayInterface
