@@ -4,7 +4,7 @@ namespace CampaignBundle\Entity;
 
 use CampaignBundle\Enum\CampaignStatus;
 use CampaignBundle\Repository\CampaignRepository;
-use Carbon\Carbon;
+use Carbon\CarbonImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -18,25 +18,15 @@ use Tourze\DoctrineIpBundle\Attribute\UpdateIpColumn;
 use Tourze\DoctrineSnowflakeBundle\Attribute\SnowflakeColumn;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 use Tourze\DoctrineTrackBundle\Attribute\TrackColumn;
-use Tourze\DoctrineUserBundle\Attribute\CreatedByColumn;
-use Tourze\DoctrineUserBundle\Attribute\UpdatedByColumn;
-use Tourze\EasyAdmin\Attribute\Action\Creatable;
-use Tourze\EasyAdmin\Attribute\Action\CurdAction;
-use Tourze\EasyAdmin\Attribute\Action\Editable;
-use Tourze\EasyAdmin\Attribute\Column\PictureColumn;
-use Tourze\EasyAdmin\Attribute\Field\ImagePickerField;
+use Tourze\DoctrineUserBundle\Traits\BlameableAware;
 
-#[Creatable(drawerWidth: 800)]
-#[Editable(drawerWidth: 800)]
 #[ORM\Entity(repositoryClass: CampaignRepository::class)]
 #[ORM\Table(name: 'campaign_main', options: ['comment' => '活动管理'])]
-class Campaign implements AdminArrayInterface
+class Campaign implements \Stringable, AdminArrayInterface
 {
     use TimestampableAware;
+    use BlameableAware;
 
-    /**
-     * order值大的排序靠前。有效的值范围是[0, 2^32].
-     */
     #[IndexColumn]
     #[ORM\Column(type: Types::INTEGER, nullable: true, options: ['default' => '0', 'comment' => '次序值'])]
     private ?int $sortNumber = 0;
@@ -65,13 +55,6 @@ class Campaign implements AdminArrayInterface
     #[ORM\Column(type: Types::INTEGER, options: ['comment' => 'ID'])]
     private ?int $id = 0;
 
-    #[CreatedByColumn]
-    #[ORM\Column(nullable: true, options: ['comment' => '创建人'])]
-    private ?string $createdBy = null;
-
-    #[UpdatedByColumn]
-    #[ORM\Column(nullable: true, options: ['comment' => '更新人'])]
-    private ?string $updatedBy = null;
 
     #[CreateIpColumn]
     #[ORM\Column(length: 128, nullable: true, options: ['comment' => '创建时IP'])]
@@ -102,18 +85,16 @@ class Campaign implements AdminArrayInterface
     #[ORM\Column(length: 120, nullable: true, options: ['comment' => '副标题'])]
     private ?string $subtitle = null;
 
-    #[ImagePickerField]
-    #[PictureColumn]
     #[Groups(['restful_read'])]
     #[ORM\Column(length: 255, nullable: true, options: ['comment' => '缩略图'])]
     private ?string $thumbUrl = null;
 
     #[Groups(['restful_read'])]
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, options: ['comment' => '开始时间'])]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, options: ['comment' => '开始时间'])]
     private ?\DateTimeInterface $startTime = null;
 
     #[Groups(['restful_read'])]
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, options: ['comment' => '结束时间'])]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, options: ['comment' => '结束时间'])]
     private ?\DateTimeInterface $endTime = null;
 
     #[Groups(['restful_read'])]
@@ -127,7 +108,6 @@ class Campaign implements AdminArrayInterface
      * @var Collection<Award>
      */
     #[Ignore]
-    #[CurdAction(label: '权益配置', drawerWidth: 1200)]
     #[Groups(['restful_read'])]
     #[ORM\OneToMany(mappedBy: 'campaign', targetEntity: Award::class, cascade: ['persist'], fetch: 'EXTRA_LAZY', orphanRemoval: true)]
     private Collection $awards;
@@ -136,17 +116,12 @@ class Campaign implements AdminArrayInterface
      * @var Collection<EventLog>
      */
     #[Ignore]
-    #[CurdAction(label: '参与记录')]
     #[ORM\OneToMany(mappedBy: 'campaign', targetEntity: EventLog::class)]
     private Collection $eventLogs;
 
-    #[ImagePickerField]
     #[ORM\Column(type: Types::STRING, length: 1000, nullable: true, options: ['comment' => '分享图'])]
     private ?string $shareImg = null;
 
-    /**
-     * @LongTextField()
-     */
     #[ORM\Column(type: Types::STRING, length: 1000, nullable: true, options: ['comment' => '分享文案'])]
     private ?string $shareTitle = null;
 
@@ -170,7 +145,6 @@ class Campaign implements AdminArrayInterface
     #[ORM\Column(nullable: false, options: ['comment' => '是否推荐'])]
     private ?bool $recommend = false;
 
-    #[CurdAction(label: '属性', drawerWidth: 1000)]
     #[ORM\OneToMany(mappedBy: 'campaign', targetEntity: Attribute::class)]
     private Collection $attributes;
 
@@ -188,52 +162,9 @@ class Campaign implements AdminArrayInterface
         return $this->id;
     }
 
-    public function setCreatedFromIp(?string $createdFromIp): self
+    public function __toString(): string
     {
-        $this->createdFromIp = $createdFromIp;
-
-        return $this;
-    }
-
-    public function getCreatedFromIp(): ?string
-    {
-        return $this->createdFromIp;
-    }
-
-    public function setUpdatedFromIp(?string $updatedFromIp): self
-    {
-        $this->updatedFromIp = $updatedFromIp;
-
-        return $this;
-    }
-
-    public function getUpdatedFromIp(): ?string
-    {
-        return $this->updatedFromIp;
-    }
-
-    public function setCreatedBy(?string $createdBy): self
-    {
-        $this->createdBy = $createdBy;
-
-        return $this;
-    }
-
-    public function getCreatedBy(): ?string
-    {
-        return $this->createdBy;
-    }
-
-    public function setUpdatedBy(?string $updatedBy): self
-    {
-        $this->updatedBy = $updatedBy;
-
-        return $this;
-    }
-
-    public function getUpdatedBy(): ?string
-    {
-        return $this->updatedBy;
+        return $this->getName() ?? '';
     }
 
     public function isValid(): ?bool
@@ -531,7 +462,7 @@ class Campaign implements AdminArrayInterface
     public function getStartCountdown(): int
     {
         if (CampaignStatus::PENDING === $this->getStatus()) {
-            return abs(Carbon::now()->getTimestamp() - $this->getStartTime()->getTimestamp());
+            return abs(CarbonImmutable::now()->getTimestamp() - $this->getStartTime()->getTimestamp());
         }
 
         return 0;
@@ -544,7 +475,7 @@ class Campaign implements AdminArrayInterface
     public function getCloseCountdown(): int
     {
         if (CampaignStatus::RUNNING === $this->getStatus()) {
-            return abs($this->getEndTime()->getTimestamp() - Carbon::now()->getTimestamp());
+            return abs($this->getEndTime()->getTimestamp() - CarbonImmutable::now()->getTimestamp());
         }
 
         return 0;
@@ -553,7 +484,7 @@ class Campaign implements AdminArrayInterface
     #[Groups(['restful_read'])]
     public function getStatus(): CampaignStatus
     {
-        $now = Carbon::now();
+        $now = CarbonImmutable::now();
         if ($now->greaterThan($this->getEndTime())) {
             return CampaignStatus::CLOSED;
         }

@@ -14,11 +14,10 @@ use Tourze\DoctrineIpBundle\Attribute\UpdateIpColumn;
 use Tourze\DoctrineSnowflakeBundle\Service\SnowflakeIdGenerator;
 use Tourze\DoctrineTimestampBundle\Traits\CreateTimeAware;
 use Tourze\DoctrineUserBundle\Traits\BlameableAware;
-use Tourze\EasyAdmin\Attribute\Filter\Filterable;
 
 #[ORM\Entity(repositoryClass: EventLogRepository::class, readOnly: true)]
 #[ORM\Table(name: 'campaign_event_log', options: ['comment' => '参与日志'])]
-class EventLog implements AdminArrayInterface
+class EventLog implements \Stringable, AdminArrayInterface
 {
     use CreateTimeAware;
     use BlameableAware;
@@ -42,7 +41,6 @@ class EventLog implements AdminArrayInterface
     #[ORM\JoinColumn(onDelete: 'CASCADE')]
     private ?Campaign $campaign = null;
 
-    #[Filterable(label: '用户')]
     #[ORM\ManyToOne(targetEntity: UserInterface::class)]
     #[ORM\JoinColumn(onDelete: 'CASCADE')]
     private ?UserInterface $user = null;
@@ -54,6 +52,11 @@ class EventLog implements AdminArrayInterface
     #[Groups(['restful_read'])]
     #[ORM\Column(type: Types::JSON, nullable: true, options: ['comment' => '参数'])]
     private array $params = [];
+
+    public function __toString(): string
+    {
+        return $this->getEvent() ?? '';
+    }
 
     public function getId(): ?string
     {

@@ -5,7 +5,7 @@ namespace CampaignBundle\Procedure;
 use CampaignBundle\Entity\Chance;
 use CampaignBundle\Repository\CampaignRepository;
 use CampaignBundle\Repository\ChanceRepository;
-use Carbon\Carbon;
+use Carbon\CarbonImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Monolog\Attribute\WithMonologChannel;
 use Psr\Log\LoggerInterface;
@@ -98,7 +98,7 @@ class RequestCampaignChance extends LockableProcedure
                 ]);
             }
 
-            if (!$checkRes) {
+            if (false === $checkRes) {
                 throw new ApiException('您当前不符合活动资格');
             }
 
@@ -106,7 +106,7 @@ class RequestCampaignChance extends LockableProcedure
             $chance = new Chance();
             $chance->setCampaign($campaign);
             $chance->setUser($this->security->getUser());
-            $chance->setStartTime(Carbon::now());
+            $chance->setStartTime(CarbonImmutable::now());
             $chance->setExpireTime($campaign->getEndTime());
             $chance->setValid(true);
             $this->entityManager->persist($chance);

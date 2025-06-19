@@ -7,7 +7,7 @@ use CampaignBundle\Entity\Campaign;
 use CampaignBundle\Enum\AwardType;
 use CampaignBundle\Repository\AwardRepository;
 use CampaignBundle\Repository\CampaignRepository;
-use Carbon\Carbon;
+use Carbon\CarbonImmutable;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
@@ -27,8 +27,8 @@ class BasicCampaignFixture extends Fixture
             $campaign->setCode('TYJG');
             $campaign->setName('托运进港');
             $campaign->setValid(true);
-            $campaign->setStartTime(Carbon::now());
-            $campaign->setEndTime(Carbon::now()->subYears(10));
+            $campaign->setStartTime(CarbonImmutable::now());
+            $campaign->setEndTime(CarbonImmutable::now()->subYears(10));
         }
 
         $manager->persist($campaign);

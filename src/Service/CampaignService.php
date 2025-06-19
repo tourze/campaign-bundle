@@ -10,7 +10,7 @@ use CampaignBundle\Enum\AwardType;
 use CampaignBundle\Enum\LimitType;
 use CampaignBundle\Repository\ChanceRepository;
 use CampaignBundle\Repository\RewardRepository;
-use Carbon\Carbon;
+use Carbon\CarbonImmutable;
 use CreditBundle\Service\AccountService;
 use CreditBundle\Service\CurrencyService;
 use CreditBundle\Service\TransactionService;
@@ -18,7 +18,6 @@ use Doctrine\ORM\EntityManagerInterface;
 use OrderBundle\Entity\OfferChance;
 use OrderBundle\Entity\OfferSku;
 use OrderBundle\Repository\OfferChanceRepository;
-use OrderBundle\Repository\OfferSkuRepository;
 use ProductBundle\Repository\SkuRepository;
 use ProductBundle\Repository\SpuRepository;
 use Psr\Log\LoggerInterface;
@@ -83,7 +82,7 @@ class CampaignService
             if (!$chance) {
                 return false;
             }
-            $chance->setUseTime(Carbon::now());
+            $chance->setUseTime(CarbonImmutable::now());
             $chance->setValid(false);
             $this->entityManager->persist($chance);
             $this->entityManager->flush();
@@ -110,7 +109,7 @@ class CampaignService
                 ->where('r.award = :award and r.user = :user')
                 ->setParameter('award', $award)
                 ->setParameter('user', $user);
-            $now = Carbon::now();
+            $now = CarbonImmutable::now();
             switch ($award->getAwardLimitType()) {
                 case AwardLimitType::BUY_DAILY:
                     $qb = $qb->andWhere('r.createTime between :start and :end')
@@ -217,7 +216,7 @@ class CampaignService
             $offerChance = new OfferChance();
             $offerChance->setTitle("{$campaign->getName()}赠送SKU资格[{$award->getValue()}]");
             $offerChance->setUser($user);
-            $offerChance->setStartTime(Carbon::now());
+            $offerChance->setStartTime(CarbonImmutable::now());
             $offerChance->setEndTime($campaign->getEndTime());
             $offerChance->setValid(true);
 

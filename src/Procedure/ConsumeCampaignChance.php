@@ -4,7 +4,7 @@ namespace CampaignBundle\Procedure;
 
 use CampaignBundle\Repository\CampaignRepository;
 use CampaignBundle\Repository\ChanceRepository;
-use Carbon\Carbon;
+use Carbon\CarbonImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -68,7 +68,7 @@ class ConsumeCampaignChance extends LockableProcedure
         }
 
         // 消耗这个机会
-        $chance->setUseTime(Carbon::now());
+        $chance->setUseTime(CarbonImmutable::now());
         $chance->setValid(false);
         $this->entityManager->persist($chance);
         $this->entityManager->flush();
