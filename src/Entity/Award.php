@@ -13,8 +13,6 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Serializer\Attribute\Ignore;
 use Tourze\Arrayable\AdminArrayInterface;
-use Tourze\DoctrineIpBundle\Attribute\CreateIpColumn;
-use Tourze\DoctrineIpBundle\Attribute\UpdateIpColumn;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 use Tourze\DoctrineUserBundle\Traits\BlameableAware;
 
@@ -31,13 +29,6 @@ class Award implements \Stringable, AdminArrayInterface
     private ?int $id = 0;
 
 
-    #[CreateIpColumn]
-    #[ORM\Column(length: 128, nullable: true, options: ['comment' => '创建时IP'])]
-    private ?string $createdFromIp = null;
-
-    #[UpdateIpColumn]
-    #[ORM\Column(length: 128, nullable: true, options: ['comment' => '更新时IP'])]
-    private ?string $updatedFromIp = null;
 
     #[Ignore]
     #[ORM\ManyToOne(targetEntity: Campaign::class, inversedBy: 'awards')]
@@ -71,8 +62,8 @@ class Award implements \Stringable, AdminArrayInterface
     #[ORM\Column(type: Types::INTEGER, options: ['comment' => '总数量'])]
     private ?int $prizeQuantity = 0;
 
-    #[ORM\Column(length: 100, nullable: true, enumType: AwardLimitType::class, options: ['comment' => '领取限制类型'])]
-    private ?AwardLimitType $awardLimitType = AwardLimitType::BUY_TOTAL;
+    #[ORM\Column(length: 100, enumType: AwardLimitType::class, options: ['comment' => '领取限制类型', 'default' => 'buy_total'])]
+    private AwardLimitType $awardLimitType = AwardLimitType::BUY_TOTAL;
 
     #[ORM\Column(nullable: true, options: ['comment' => '领取限制次数', 'default' => 1])]
     private ?int $times = null;
@@ -84,7 +75,7 @@ class Award implements \Stringable, AdminArrayInterface
 
     public function __toString(): string
     {
-        if (!$this->getId()) {
+        if ($this->getId() === null || $this->getId() === 0) {
             return '';
         }
 

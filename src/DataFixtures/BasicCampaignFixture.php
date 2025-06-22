@@ -22,7 +22,7 @@ class BasicCampaignFixture extends Fixture
     public function load(ObjectManager $manager): void
     {
         $campaign = $this->campaignRepository->findOneBy(['code' => 'TYJG']);
-        if (!$campaign) {
+        if ($campaign === null) {
             $campaign = new Campaign();
             $campaign->setCode('TYJG');
             $campaign->setName('托运进港');
@@ -39,7 +39,7 @@ class BasicCampaignFixture extends Fixture
             $awards->setCampaign($campaign);
             $awards->setEvent('get-phone');
             $awards->setType(AwardType::SPU_QUALIFICATION);
-            $awards->setValue(1);
+            $awards->setValue('1');
             $manager->persist($awards);
         }
 

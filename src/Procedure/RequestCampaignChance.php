@@ -53,7 +53,7 @@ class RequestCampaignChance extends LockableProcedure
             'code' => $this->campaignCode,
             'valid' => true,
         ]);
-        if (!$campaign) {
+        if ($campaign === null) {
             throw new ApiException('找不到活动信息');
         }
 
@@ -65,18 +65,18 @@ class RequestCampaignChance extends LockableProcedure
         ], ['id' => 'DESC']);
 
         // 没机会的话，尝试下分配机会
-        if (!$chance) {
+        if ($chance === null) {
             if (empty($campaign->getRequestExpression())) {
                 throw new ApiException('请联系客服设置机会条件');
             }
 
-            /** @var BizUser $user */
+            /** @var \Symfony\Component\Security\Core\User\UserInterface $user */
             $user = $this->security->getUser();
 
             $values = [
                 'user' => $user,
                 'member' => $user,
-                'member_id' => $user->getId(),
+                'member_id' => $user->getUserIdentifier(),
                 'campaign' => $campaign,
                 'env' => $_ENV,
             ];

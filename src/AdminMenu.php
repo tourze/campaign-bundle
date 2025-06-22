@@ -16,7 +16,7 @@ class AdminMenu implements MenuProviderInterface
 
     public function __invoke(ItemInterface $item): void
     {
-        if (!$item->getChild('通用活动')) {
+        if ($item->getChild('通用活动') === null) {
             $item->addChild('通用活动');
         }
 

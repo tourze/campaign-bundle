@@ -43,7 +43,7 @@ class ConsumeCampaignChance extends LockableProcedure
             'code' => $this->campaignCode,
             'valid' => true,
         ]);
-        if (!$campaign) {
+        if ($campaign === null) {
             throw new ApiException('找不到活动信息');
         }
 
@@ -63,7 +63,7 @@ class ConsumeCampaignChance extends LockableProcedure
             ]);
         }
 
-        if (!$chance) {
+        if ($chance === null) {
             throw new ApiException('您暂时没有资格参与该活动');
         }
 

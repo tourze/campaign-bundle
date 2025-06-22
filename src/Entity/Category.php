@@ -72,7 +72,7 @@ class Category implements \Stringable
 
     public function __toString(): string
     {
-        if (!$this->getId()) {
+        if ($this->getId() === null || $this->getId() === '0') {
             return '';
         }
 

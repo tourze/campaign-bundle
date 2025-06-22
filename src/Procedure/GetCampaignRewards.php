@@ -48,7 +48,7 @@ class GetCampaignRewards extends BaseProcedure
             'code' => $this->campaignCode,
             'valid' => true,
         ]);
-        if (!$campaign) {
+        if ($campaign === null) {
             throw new ApiException('找不到活动信息');
         }
 
@@ -77,7 +77,7 @@ class GetCampaignRewards extends BaseProcedure
         $re['valid'] = false;
         if (in_array($reward->getType(), [AwardType::SPU_QUALIFICATION, AwardType::SKU_QUALIFICATION])) {
             $offerChance = $this->offerChanceRepository->find($reward->getSn());
-            if ($offerChance && $offerChance->getValid()) {
+            if ($offerChance !== null && $offerChance->getValid()) {
                 $re['valid'] = true;
             }
         }

@@ -13,8 +13,6 @@ use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Serializer\Attribute\Ignore;
 use Tourze\Arrayable\AdminArrayInterface;
 use Tourze\DoctrineIndexedBundle\Attribute\IndexColumn;
-use Tourze\DoctrineIpBundle\Attribute\CreateIpColumn;
-use Tourze\DoctrineIpBundle\Attribute\UpdateIpColumn;
 use Tourze\DoctrineSnowflakeBundle\Attribute\SnowflakeColumn;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 use Tourze\DoctrineTrackBundle\Attribute\TrackColumn;
@@ -56,13 +54,6 @@ class Campaign implements \Stringable, AdminArrayInterface
     private ?int $id = 0;
 
 
-    #[CreateIpColumn]
-    #[ORM\Column(length: 128, nullable: true, options: ['comment' => '创建时IP'])]
-    private ?string $createdFromIp = null;
-
-    #[UpdateIpColumn]
-    #[ORM\Column(length: 128, nullable: true, options: ['comment' => '更新时IP'])]
-    private ?string $updatedFromIp = null;
 
     #[IndexColumn]
     #[TrackColumn]
@@ -133,7 +124,7 @@ class Campaign implements \Stringable, AdminArrayInterface
     private Collection $rewards;
 
     /**
-     * @var Collection<int, Chance>|Chance[]
+     * @var Collection<int, Chance>
      */
     #[Ignore]
     #[ORM\OneToMany(mappedBy: 'campaign', targetEntity: Chance::class)]
@@ -301,12 +292,7 @@ class Campaign implements \Stringable, AdminArrayInterface
 
     public function removeAward(Award $award): self
     {
-        if ($this->awards->removeElement($award)) {
-            // set the owning side to null (unless already changed)
-            if ($award->getCampaign() === $this) {
-                $award->setCampaign(null);
-            }
-        }
+        $this->awards->removeElement($award);
 
         return $this;
     }

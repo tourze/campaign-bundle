@@ -6,8 +6,8 @@ use CampaignBundle\Entity\EventLog;
 use CampaignBundle\Event\UserEventReportEvent;
 use CampaignBundle\Repository\AwardRepository;
 use CampaignBundle\Repository\CampaignRepository;
-use CampaignBundle\Repository\EventLogRepository;
 use CampaignBundle\Service\CampaignService;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
@@ -18,7 +18,6 @@ use Tourze\JsonRPC\Core\Attribute\MethodTag;
 use Tourze\JsonRPC\Core\Exception\ApiException;
 use Tourze\JsonRPCLockBundle\Procedure\LockableProcedure;
 use Tourze\JsonRPCLogBundle\Attribute\Log;
-use Doctrine\ORM\EntityManagerInterface;
 
 #[MethodTag('活动模块')]
 #[MethodDoc('上报活动事件')]
@@ -38,7 +37,6 @@ class ReportCampaignEventLog extends LockableProcedure
 
     public function __construct(
         private readonly CampaignRepository $campaignRepository,
-        private readonly EventLogRepository $logRepository,
         private readonly CampaignService $campaignService,
         private readonly AwardRepository $awardRepository,
         private readonly Security $security,
@@ -53,7 +51,7 @@ class ReportCampaignEventLog extends LockableProcedure
             'code' => $this->campaignCode,
             'valid' => true,
         ]);
-        if (!$campaign) {
+        if ($campaign === null) {
             throw new ApiException('找不到活动信息');
         }
 
@@ -78,7 +76,7 @@ class ReportCampaignEventLog extends LockableProcedure
         $this->eventDispatcher->dispatch($event);
         $result = $event->getResult();
 
-        if (!$event->isHook()) {
+        if ($event->isHook() === false) {
             // 查出所有的权益
             $awards = $this->awardRepository->findBy([
                 'campaign' => $campaign,

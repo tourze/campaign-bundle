@@ -45,7 +45,7 @@ class GetCampaignEventLogs extends BaseProcedure
             'code' => $this->campaignCode,
             'valid' => true,
         ]);
-        if (!$campaign) {
+        if ($campaign === null) {
             throw new ApiException('找不到活动信息');
         }
 

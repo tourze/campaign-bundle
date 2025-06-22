@@ -36,7 +36,7 @@ class GetCampaignConfig extends BaseProcedure
             'code' => $this->campaignCode,
             'valid' => true,
         ]);
-        if (!$campaign) {
+        if ($campaign === null) {
             throw new ApiException('找不到活动信息');
         }
 
@@ -48,20 +48,20 @@ class GetCampaignConfig extends BaseProcedure
             $result['visitUrl'] = str_replace('{webview:routerParams}', http_build_query($this->routerParams), $result['visitUrl']);
         }
 
-        if ($this->security->getUser()) {
+        if ($this->security->getUser() !== null) {
             $result['visitUrl'] = $this->textFormatter->formatText($result['visitUrl'], [
                 'user' => $this->security->getUser(),
                 'campaign' => $campaign,
             ]);
         }
 
-        if ($campaign->getShareImg()) {
+        if ($campaign->getShareImg() !== null) {
             $config = [
                 'title' => $campaign->getShareTitle(),
                 'imageUrl' => $campaign->getShareImg(),
                 'path' => "/pages/webview/campaign?code={$campaign->getCode()}",
             ];
-            if ($this->security->getUser()) {
+            if ($this->security->getUser() !== null) {
                 $config['path'] = "{$config['path']}&shareUser={$this->security->getUser()->getUserIdentifier()}";
             }
 

@@ -55,14 +55,18 @@ class CampaignService
                 'user' => $user,
                 'valid' => true,
             ]);
-            if (!$chance) {
+            if ($chance === null) {
                 return false;
             }
         }
 
         // 检查标签情况
         if (LimitType::USER_TAG === $limit->getType()) {
-            if (!in_array($limit->getValue(), $this->userTagService->getTagIdsByUser($user))) {
+            $userTagNames = [];
+        foreach ($this->userTagService->loadTagsByUser($user) as $tag) {
+            $userTagNames[] = $tag->getName();
+        }
+        if (in_array($limit->getValue(), $userTagNames) === false) {
                 return false;
             }
         }
@@ -79,7 +83,7 @@ class CampaignService
                 'user' => $user,
                 'valid' => true,
             ]);
-            if (!$chance) {
+            if ($chance === null) {
                 return false;
             }
             $chance->setUseTime(CarbonImmutable::now());
@@ -166,7 +170,7 @@ class CampaignService
 
         // 优惠券
         if (AwardType::COUPON === $award->getType()) {
-            if (!$this->couponService) {
+            if ($this->couponService === null) {
                 throw new \Exception('暂时不支持优惠券业务');
             }
             $coupon = $this->couponService->detectCoupon($award->getValue());
@@ -185,7 +189,7 @@ class CampaignService
         // SKU购买资格
         if (in_array($award->getType(), [AwardType::SKU_QUALIFICATION, AwardType::SPU_QUALIFICATION])) {
             if (AwardType::SKU_QUALIFICATION === $award->getType()) {
-                if (!$this->skuRepository) {
+                if ($this->skuRepository === null) {
                     throw new \Exception('暂时不支持SKU业务');
                 }
                 $sku = $this->skuRepository->findOneBy([
@@ -195,7 +199,7 @@ class CampaignService
             }
 
             if (AwardType::SPU_QUALIFICATION === $award->getType()) {
-                if (!$this->spuRepository) {
+                if ($this->spuRepository === null) {
                     throw new \Exception('暂时不支持SPU业务');
                 }
                 $spu = $this->spuRepository->findOneBy([
@@ -210,7 +214,7 @@ class CampaignService
                 throw new ApiException('商品无库存', 1007);
             }
 
-            if (!$this->offerChanceRepository) {
+            if ($this->offerChanceRepository === null) {
                 throw new \Exception('暂时不支持订单业务');
             }
             $offerChance = new OfferChance();
