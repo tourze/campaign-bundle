@@ -27,11 +27,11 @@ class Attribute implements \Stringable, ApiArrayInterface
     private ?int $id = 0;
 
 
-    #[Groups(['restful_read'])]
+    #[Groups(groups: ['restful_read'])]
     #[ORM\Column(type: Types::STRING, length: 120, options: ['comment' => '属性名称'])]
     private ?string $name = null;
 
-    #[Groups(['restful_read'])]
+    #[Groups(groups: ['restful_read'])]
     #[ORM\Column(type: Types::STRING, length: 100, options: ['comment' => '属性内容'])]
     private ?string $value = null;
 

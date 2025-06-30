@@ -16,17 +16,17 @@ use Tourze\JsonRPC\Core\Exception\ApiException;
 use Tourze\JsonRPCLockBundle\Procedure\LockableProcedure;
 use Tourze\JsonRPCLogBundle\Attribute\Log;
 
-#[MethodTag('活动模块')]
-#[MethodDoc('使用、消耗指定的活动机会信息')]
-#[MethodExpose('ConsumeCampaignChance')]
-#[IsGranted('IS_AUTHENTICATED_FULLY')]
+#[MethodTag(name: '活动模块')]
+#[MethodDoc(summary: '使用、消耗指定的活动机会信息')]
+#[MethodExpose(method: 'ConsumeCampaignChance')]
+#[IsGranted(attribute: 'IS_AUTHENTICATED_FULLY')]
 #[Log]
 class ConsumeCampaignChance extends LockableProcedure
 {
-    #[MethodParam('活动代号')]
+    #[MethodParam(description: '活动代号')]
     public string $campaignCode;
 
-    #[MethodParam('机会ID，不传入则自动查找')]
+    #[MethodParam(description: '机会ID，不传入则自动查找')]
     public string $chanceId = '';
 
     public function __construct(

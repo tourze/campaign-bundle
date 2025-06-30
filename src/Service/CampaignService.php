@@ -8,6 +8,10 @@ use CampaignBundle\Entity\Reward;
 use CampaignBundle\Enum\AwardLimitType;
 use CampaignBundle\Enum\AwardType;
 use CampaignBundle\Enum\LimitType;
+use CampaignBundle\Exception\CouponNotSupportedException;
+use CampaignBundle\Exception\OrderNotSupportedException;
+use CampaignBundle\Exception\SkuNotSupportedException;
+use CampaignBundle\Exception\SpuNotSupportedException;
 use CampaignBundle\Repository\ChanceRepository;
 use CampaignBundle\Repository\RewardRepository;
 use Carbon\CarbonImmutable;
@@ -15,16 +19,16 @@ use CreditBundle\Service\AccountService;
 use CreditBundle\Service\CurrencyService;
 use CreditBundle\Service\TransactionService;
 use Doctrine\ORM\EntityManagerInterface;
-use OrderBundle\Entity\OfferChance;
-use OrderBundle\Entity\OfferSku;
-use OrderBundle\Repository\OfferChanceRepository;
-use ProductCoreBundle\Repository\SkuRepository;
-use ProductCoreBundle\Repository\SpuRepository;
+use OrderCoreBundle\Entity\OfferChance;
+use OrderCoreBundle\Entity\OfferSku;
+use OrderCoreBundle\Repository\OfferChanceRepository;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Uid\Uuid;
 use Tourze\CouponCoreBundle\Service\CouponService;
 use Tourze\JsonRPC\Core\Exception\ApiException;
+use Tourze\ProductCoreBundle\Repository\SkuRepository;
+use Tourze\ProductCoreBundle\Repository\SpuRepository;
 use Tourze\Symfony\AopDoctrineBundle\Attribute\Transactional;
 use Tourze\UserTagContracts\TagLoaderInterface;
 
@@ -171,7 +175,7 @@ class CampaignService
         // 优惠券
         if (AwardType::COUPON === $award->getType()) {
             if ($this->couponService === null) {
-                throw new \Exception('暂时不支持优惠券业务');
+                throw new CouponNotSupportedException();
             }
             $coupon = $this->couponService->detectCoupon($award->getValue());
             try {
@@ -190,7 +194,7 @@ class CampaignService
         if (in_array($award->getType(), [AwardType::SKU_QUALIFICATION, AwardType::SPU_QUALIFICATION])) {
             if (AwardType::SKU_QUALIFICATION === $award->getType()) {
                 if ($this->skuRepository === null) {
-                    throw new \Exception('暂时不支持SKU业务');
+                    throw new SkuNotSupportedException();
                 }
                 $sku = $this->skuRepository->findOneBy([
                     'id' => $award->getValue(),
@@ -200,7 +204,7 @@ class CampaignService
 
             if (AwardType::SPU_QUALIFICATION === $award->getType()) {
                 if ($this->spuRepository === null) {
-                    throw new \Exception('暂时不支持SPU业务');
+                    throw new SpuNotSupportedException();
                 }
                 $spu = $this->spuRepository->findOneBy([
                     'id' => $award->getValue(),
@@ -215,7 +219,7 @@ class CampaignService
             }
 
             if ($this->offerChanceRepository === null) {
-                throw new \Exception('暂时不支持订单业务');
+                throw new OrderNotSupportedException();
             }
             $offerChance = new OfferChance();
             $offerChance->setTitle("{$campaign->getName()}赠送SKU资格[{$award->getValue()}]");

@@ -14,9 +14,9 @@ use Tourze\JsonRPC\Core\Model\JsonRpcRequest;
 use Tourze\JsonRPCCacheBundle\Procedure\CacheableProcedure;
 use Tourze\JsonRPCPaginatorBundle\Procedure\PaginatorTrait;
 
-#[MethodTag('活动模块')]
-#[MethodDoc('获取活动目录列表')]
-#[MethodExpose('GetCampaignCategoryList')]
+#[MethodTag(name: '活动模块')]
+#[MethodDoc(summary: '获取活动目录列表')]
+#[MethodExpose(method: 'GetCampaignCategoryList')]
 class GetCampaignCategoryList extends CacheableProcedure
 {
     use PaginatorTrait;

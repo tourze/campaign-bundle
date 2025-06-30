@@ -63,32 +63,32 @@ class Campaign implements \Stringable, AdminArrayInterface
     #[ORM\ManyToOne(targetEntity: Category::class, inversedBy: 'campaigns')]
     private ?Category $category = null;
 
-    #[Groups(['restful_read'])]
+    #[Groups(groups: ['restful_read'])]
     #[SnowflakeColumn(prefix: 'CMP')]
     #[ORM\Column(type: Types::STRING, length: 100, unique: true, options: ['comment' => '代号'])]
     private ?string $code = null;
 
-    #[Groups(['restful_read'])]
+    #[Groups(groups: ['restful_read'])]
     #[ORM\Column(type: Types::STRING, length: 120, options: ['comment' => '活动名'])]
     private ?string $name = null;
 
-    #[Groups(['restful_read'])]
+    #[Groups(groups: ['restful_read'])]
     #[ORM\Column(length: 120, nullable: true, options: ['comment' => '副标题'])]
     private ?string $subtitle = null;
 
-    #[Groups(['restful_read'])]
+    #[Groups(groups: ['restful_read'])]
     #[ORM\Column(length: 255, nullable: true, options: ['comment' => '缩略图'])]
     private ?string $thumbUrl = null;
 
-    #[Groups(['restful_read'])]
+    #[Groups(groups: ['restful_read'])]
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, options: ['comment' => '开始时间'])]
     private ?\DateTimeInterface $startTime = null;
 
-    #[Groups(['restful_read'])]
+    #[Groups(groups: ['restful_read'])]
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, options: ['comment' => '结束时间'])]
     private ?\DateTimeInterface $endTime = null;
 
-    #[Groups(['restful_read'])]
+    #[Groups(groups: ['restful_read'])]
     #[ORM\Column(type: Types::JSON, nullable: true, options: ['comment' => '标签'])]
     private ?array $tags = null;
 
@@ -96,15 +96,15 @@ class Campaign implements \Stringable, AdminArrayInterface
     private ?string $entryUrl = null;
 
     /**
-     * @var Collection<Award>
+     * @var Collection<int, Award>
      */
     #[Ignore]
-    #[Groups(['restful_read'])]
+    #[Groups(groups: ['restful_read'])]
     #[ORM\OneToMany(mappedBy: 'campaign', targetEntity: Award::class, cascade: ['persist'], fetch: 'EXTRA_LAZY', orphanRemoval: true)]
     private Collection $awards;
 
     /**
-     * @var Collection<EventLog>
+     * @var Collection<int, EventLog>
      */
     #[Ignore]
     #[ORM\OneToMany(mappedBy: 'campaign', targetEntity: EventLog::class)]
@@ -117,7 +117,7 @@ class Campaign implements \Stringable, AdminArrayInterface
     private ?string $shareTitle = null;
 
     /**
-     * @var Collection<Reward>
+     * @var Collection<int, Reward>
      */
     #[Ignore]
     #[ORM\OneToMany(mappedBy: 'campaign', targetEntity: Reward::class)]
@@ -136,6 +136,9 @@ class Campaign implements \Stringable, AdminArrayInterface
     #[ORM\Column(nullable: false, options: ['comment' => '是否推荐'])]
     private ?bool $recommend = false;
 
+    /**
+     * @var Collection<int, Attribute>
+     */
     #[ORM\OneToMany(mappedBy: 'campaign', targetEntity: Attribute::class)]
     private Collection $attributes;
 
@@ -444,7 +447,7 @@ class Campaign implements \Stringable, AdminArrayInterface
     /**
      * @return int 开始倒计时
      */
-    #[Groups(['restful_read'])]
+    #[Groups(groups: ['restful_read'])]
     public function getStartCountdown(): int
     {
         if (CampaignStatus::PENDING === $this->getStatus()) {
@@ -457,7 +460,7 @@ class Campaign implements \Stringable, AdminArrayInterface
     /**
      * @return int 结束倒计时
      */
-    #[Groups(['restful_read'])]
+    #[Groups(groups: ['restful_read'])]
     public function getCloseCountdown(): int
     {
         if (CampaignStatus::RUNNING === $this->getStatus()) {
@@ -467,7 +470,7 @@ class Campaign implements \Stringable, AdminArrayInterface
         return 0;
     }
 
-    #[Groups(['restful_read'])]
+    #[Groups(groups: ['restful_read'])]
     public function getStatus(): CampaignStatus
     {
         $now = CarbonImmutable::now();
@@ -481,7 +484,7 @@ class Campaign implements \Stringable, AdminArrayInterface
         return CampaignStatus::RUNNING;
     }
 
-    #[Groups(['restful_read'])]
+    #[Groups(groups: ['restful_read'])]
     public function getStatusText(): string
     {
         return $this->getStatus()->getLabel();

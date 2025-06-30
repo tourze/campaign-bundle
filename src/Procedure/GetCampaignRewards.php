@@ -8,7 +8,7 @@ use CampaignBundle\Repository\AwardRepository;
 use CampaignBundle\Repository\CampaignRepository;
 use CampaignBundle\Repository\RewardRepository;
 use Doctrine\Common\Collections\Criteria;
-use OrderBundle\Repository\OfferChanceRepository;
+use OrderCoreBundle\Repository\OfferChanceRepository;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Tourze\JsonRPC\Core\Attribute\MethodDoc;
@@ -19,18 +19,18 @@ use Tourze\JsonRPC\Core\Exception\ApiException;
 use Tourze\JsonRPC\Core\Procedure\BaseProcedure;
 use Tourze\JsonRPCPaginatorBundle\Procedure\PaginatorTrait;
 
-#[MethodTag('活动模块')]
-#[MethodDoc('获取活动获得的所有奖励')]
-#[MethodExpose('GetCampaignRewards')]
-#[IsGranted('IS_AUTHENTICATED_FULLY')]
+#[MethodTag(name: '活动模块')]
+#[MethodDoc(summary: '获取活动获得的所有奖励')]
+#[MethodExpose(method: 'GetCampaignRewards')]
+#[IsGranted(attribute: 'IS_AUTHENTICATED_FULLY')]
 class GetCampaignRewards extends BaseProcedure
 {
     use PaginatorTrait;
 
-    #[MethodParam('活动ID')]
+    #[MethodParam(description: '活动ID')]
     public string $campaignCode;
 
-    #[MethodParam('事件')]
+    #[MethodParam(description: '事件')]
     public string $event = '';
 
     public function __construct(

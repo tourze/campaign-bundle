@@ -12,15 +12,15 @@ use Tourze\JsonRPC\Core\Exception\ApiException;
 use Tourze\JsonRPC\Core\Procedure\BaseProcedure;
 use Tourze\TextManageBundle\Service\TextFormatter;
 
-#[MethodTag('活动模块')]
-#[MethodDoc('获取活动配置')]
-#[MethodExpose('GetCampaignConfig')]
+#[MethodTag(name: '活动模块')]
+#[MethodDoc(summary: '获取活动配置')]
+#[MethodExpose(method: 'GetCampaignConfig')]
 class GetCampaignConfig extends BaseProcedure
 {
-    #[MethodParam('活动代号')]
+    #[MethodParam(description: '活动代号')]
     public string $campaignCode;
 
-    #[MethodParam('路由参数')]
+    #[MethodParam(description: '路由参数')]
     public array $routerParams = [];
 
     public function __construct(

@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Serializer\Attribute\Ignore;
 use Tourze\DoctrineIndexedBundle\Attribute\IndexColumn;
-use Tourze\DoctrineSnowflakeBundle\Service\SnowflakeIdGenerator;
+use Tourze\DoctrineSnowflakeBundle\Traits\SnowflakeKeyAware;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 use Tourze\DoctrineTrackBundle\Attribute\TrackColumn;
 use Tourze\DoctrineUserBundle\Traits\BlameableAware;
@@ -21,6 +21,7 @@ class Category implements \Stringable
 {
     use TimestampableAware;
     use BlameableAware;
+    use SnowflakeKeyAware;
 
     #[IndexColumn]
     #[ORM\Column(type: Types::INTEGER, nullable: true, options: ['default' => '0', 'comment' => '次序值'])]
@@ -45,22 +46,18 @@ class Category implements \Stringable
         ];
     }
 
-    #[ORM\Id]
-    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
-    #[ORM\CustomIdGenerator(SnowflakeIdGenerator::class)]
-    #[ORM\Column(type: Types::BIGINT, nullable: false, options: ['comment' => 'ID'])]
-    private ?string $id = null;
-
-
     #[IndexColumn]
     #[TrackColumn]
     #[ORM\Column(type: Types::BOOLEAN, nullable: true, options: ['comment' => '有效', 'default' => 0])]
     private ?bool $valid = false;
 
-    #[Groups(['restful_read'])]
+    #[Groups(groups: ['restful_read'])]
     #[ORM\Column(length: 60, unique: true, options: ['comment' => '目录名'])]
     private ?string $title = null;
 
+    /**
+     * @var Collection<int, Campaign>
+     */
     #[Ignore]
     #[ORM\OneToMany(mappedBy: 'category', targetEntity: Campaign::class)]
     private Collection $campaigns;
@@ -77,11 +74,6 @@ class Category implements \Stringable
         }
 
         return $this->getTitle();
-    }
-
-    public function getId(): ?string
-    {
-        return $this->id;
     }
 
     public function isValid(): ?bool

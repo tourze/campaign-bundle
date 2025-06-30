@@ -9,7 +9,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Attribute\Groups;
 use Tourze\Arrayable\ApiArrayInterface;
 use Tourze\DoctrineIndexedBundle\Attribute\IndexColumn;
-use Tourze\DoctrineSnowflakeBundle\Service\SnowflakeIdGenerator;
+use Tourze\DoctrineSnowflakeBundle\Traits\SnowflakeKeyAware;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 use Tourze\DoctrineTrackBundle\Attribute\TrackColumn;
 use Tourze\DoctrineUserBundle\Traits\BlameableAware;
@@ -20,14 +20,7 @@ class Chance implements \Stringable, ApiArrayInterface
 {
     use TimestampableAware;
     use BlameableAware;
-
-    #[ORM\Id]
-    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
-    #[ORM\CustomIdGenerator(SnowflakeIdGenerator::class)]
-    #[ORM\Column(type: Types::BIGINT, nullable: false, options: ['comment' => 'ID'])]
-    private ?string $id = null;
-
-
+    use SnowflakeKeyAware;
 
     #[IndexColumn]
     #[TrackColumn]
@@ -37,7 +30,7 @@ class Chance implements \Stringable, ApiArrayInterface
     #[ORM\Column(type: Types::JSON, nullable: true, options: ['comment' => '上下文'])]
     private ?array $context = [];
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(targetEntity: UserInterface::class)]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?UserInterface $user = null;
 
@@ -54,7 +47,7 @@ class Chance implements \Stringable, ApiArrayInterface
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true, options: ['comment' => '使用时间'])]
     private ?\DateTimeInterface $useTime = null;
 
-    #[Groups(['admin_curd'])]
+    #[Groups(groups: ['admin_curd'])]
     #[ORM\Column(type: Types::TEXT, nullable: true, options: ['comment' => '备注', 'default' => ''])]
     private ?string $remark = null;
 
@@ -62,12 +55,6 @@ class Chance implements \Stringable, ApiArrayInterface
     {
         return $this->getId() ?? '';
     }
-
-    public function getId(): ?string
-    {
-        return $this->id;
-    }
-
 
     public function isValid(): ?bool
     {

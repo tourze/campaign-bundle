@@ -9,7 +9,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Serializer\Attribute\Ignore;
 use Tourze\Arrayable\AdminArrayInterface;
-use Tourze\DoctrineSnowflakeBundle\Service\SnowflakeIdGenerator;
+use Tourze\DoctrineSnowflakeBundle\Traits\SnowflakeKeyAware;
 use Tourze\DoctrineTimestampBundle\Traits\CreateTimeAware;
 use Tourze\DoctrineUserBundle\Traits\BlameableAware;
 
@@ -19,13 +19,7 @@ class EventLog implements \Stringable, AdminArrayInterface
 {
     use CreateTimeAware;
     use BlameableAware;
-
-    #[ORM\Id]
-    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
-    #[ORM\CustomIdGenerator(SnowflakeIdGenerator::class)]
-    #[ORM\Column(type: Types::BIGINT, nullable: false, options: ['comment' => 'ID'])]
-    private ?string $id = null;
-
+    use SnowflakeKeyAware;
 
     #[Ignore]
     #[ORM\ManyToOne(targetEntity: Campaign::class, inversedBy: 'eventLogs')]
@@ -36,11 +30,11 @@ class EventLog implements \Stringable, AdminArrayInterface
     #[ORM\JoinColumn(onDelete: 'CASCADE')]
     private ?UserInterface $user = null;
 
-    #[Groups(['restful_read'])]
+    #[Groups(groups: ['restful_read'])]
     #[ORM\Column(type: Types::STRING, length: 120, options: ['comment' => '事件'])]
     private string $event;
 
-    #[Groups(['restful_read'])]
+    #[Groups(groups: ['restful_read'])]
     #[ORM\Column(type: Types::JSON, nullable: true, options: ['comment' => '参数'])]
     private array $params = [];
 
@@ -48,13 +42,6 @@ class EventLog implements \Stringable, AdminArrayInterface
     {
         return $this->getEvent();
     }
-
-    public function getId(): ?string
-    {
-        return $this->id;
-    }
-
-
 
     public function getUser(): ?UserInterface
     {

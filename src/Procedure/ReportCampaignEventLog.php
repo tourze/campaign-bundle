@@ -19,20 +19,20 @@ use Tourze\JsonRPC\Core\Exception\ApiException;
 use Tourze\JsonRPCLockBundle\Procedure\LockableProcedure;
 use Tourze\JsonRPCLogBundle\Attribute\Log;
 
-#[MethodTag('活动模块')]
-#[MethodDoc('上报活动事件')]
-#[MethodExpose('ReportCampaignEventLog')]
-#[IsGranted('IS_AUTHENTICATED_FULLY')]
+#[MethodTag(name: '活动模块')]
+#[MethodDoc(summary: '上报活动事件')]
+#[MethodExpose(method: 'ReportCampaignEventLog')]
+#[IsGranted(attribute: 'IS_AUTHENTICATED_FULLY')]
 #[Log]
 class ReportCampaignEventLog extends LockableProcedure
 {
-    #[MethodParam('活动ID')]
+    #[MethodParam(description: '活动ID')]
     public string $campaignCode;
 
-    #[MethodParam('事件')]
+    #[MethodParam(description: '事件')]
     public string $event;
 
-    #[MethodParam('参数')]
+    #[MethodParam(description: '参数')]
     public array $params = [];
 
     public function __construct(

@@ -10,7 +10,7 @@ use Symfony\Component\ExpressionLanguage\ExpressionFunction;
 use Symfony\Component\ExpressionLanguage\ExpressionFunctionProviderInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-#[AutoconfigureTag('ecol.function.provider')]
+#[AutoconfigureTag(name: 'ecol.function.provider')]
 class ChanceFunctionProvider implements ExpressionFunctionProviderInterface
 {
     public function __construct(

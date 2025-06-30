@@ -38,15 +38,15 @@ class Award implements \Stringable, AdminArrayInterface
     /**
      * @var string 这里事件的意思是，触发了这个事件就会得到指定的奖励
      */
-    #[Groups(['restful_read'])]
+    #[Groups(groups: ['restful_read'])]
     #[ORM\Column(type: Types::STRING, length: 100, options: ['comment' => '事件'])]
     private string $event = 'join';
 
-    #[Groups(['restful_read'])]
+    #[Groups(groups: ['restful_read'])]
     #[ORM\Column(type: Types::STRING, length: 30, enumType: AwardType::class, options: ['comment' => '权益类型'])]
     private AwardType $type;
 
-    #[Groups(['restful_read'])]
+    #[Groups(groups: ['restful_read'])]
     #[ORM\Column(type: Types::STRING, length: 100, options: ['comment' => '权益ID'])]
     private string $value;
 
@@ -54,7 +54,7 @@ class Award implements \Stringable, AdminArrayInterface
     private ?string $remark = null;
 
     /**
-     * @var Collection<Limit>
+     * @var Collection<int, Limit>
      */
     #[ORM\OneToMany(mappedBy: 'award', targetEntity: Limit::class, cascade: ['persist'], orphanRemoval: true)]
     private Collection $limits;

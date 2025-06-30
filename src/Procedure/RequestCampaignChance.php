@@ -26,15 +26,15 @@ use Tourze\JsonRPCLogBundle\Attribute\Log;
  * 2. 参与过，剩余参数次数不足，不能继续参与；
  * 3. 没参与过，可以继续；
  */
-#[MethodTag('活动模块')]
-#[MethodDoc('请求指定活动的资格')]
-#[MethodExpose('RequestCampaignChance')]
-#[IsGranted('IS_AUTHENTICATED_FULLY')]
+#[MethodTag(name: '活动模块')]
+#[MethodDoc(summary: '请求指定活动的资格')]
+#[MethodExpose(method: 'RequestCampaignChance')]
+#[IsGranted(attribute: 'IS_AUTHENTICATED_FULLY')]
 #[Log]
-#[WithMonologChannel('procedure')]
+#[WithMonologChannel(channel: 'procedure')]
 class RequestCampaignChance extends LockableProcedure
 {
-    #[MethodParam('活动代号')]
+    #[MethodParam(description: '活动代号')]
     public string $campaignCode;
 
     public function __construct(

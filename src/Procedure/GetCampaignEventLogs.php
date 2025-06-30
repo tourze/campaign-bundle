@@ -17,18 +17,18 @@ use Tourze\JsonRPC\Core\Exception\ApiException;
 use Tourze\JsonRPC\Core\Procedure\BaseProcedure;
 use Tourze\JsonRPCPaginatorBundle\Procedure\PaginatorTrait;
 
-#[MethodTag('活动模块')]
-#[MethodDoc('拉取活动记录日志')]
-#[MethodExpose('GetCampaignEventLogs')]
-#[IsGranted('IS_AUTHENTICATED_FULLY')]
+#[MethodTag(name: '活动模块')]
+#[MethodDoc(summary: '拉取活动记录日志')]
+#[MethodExpose(method: 'GetCampaignEventLogs')]
+#[IsGranted(attribute: 'IS_AUTHENTICATED_FULLY')]
 class GetCampaignEventLogs extends BaseProcedure
 {
     use PaginatorTrait;
 
-    #[MethodParam('活动ID')]
+    #[MethodParam(description: '活动ID')]
     public string $campaignCode;
 
-    #[MethodParam('事件')]
+    #[MethodParam(description: '事件')]
     public string $event = '';
 
     public function __construct(
