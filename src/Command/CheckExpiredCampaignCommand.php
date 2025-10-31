@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CampaignBundle\Command;
 
 use CampaignBundle\Entity\Campaign;
@@ -17,11 +19,11 @@ use Tourze\Symfony\CronJob\Attribute\AsCronTask;
 class CheckExpiredCampaignCommand extends Command
 {
     public const NAME = 'campaign:check-expired-campaign';
+
     public function __construct(
         private readonly CampaignRepository $campaignRepository,
         private readonly EntityManagerInterface $entityManager,
-    )
-    {
+    ) {
         parent::__construct();
     }
 
@@ -34,7 +36,9 @@ class CheckExpiredCampaignCommand extends Command
         ;
 
         foreach ($qb->getQuery()->toIterable() as $item) {
-            /* @var Campaign $item */
+            if (!$item instanceof Campaign) {
+                throw new \InvalidArgumentException('Expected Campaign instance');
+            }
             $item->setValid(false);
             $this->entityManager->persist($item);
             $this->entityManager->flush();

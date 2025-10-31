@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CampaignBundle\Procedure;
 
 use CampaignBundle\Repository\CampaignRepository;
@@ -43,11 +45,11 @@ class ConsumeCampaignChance extends LockableProcedure
             'code' => $this->campaignCode,
             'valid' => true,
         ]);
-        if ($campaign === null) {
+        if (null === $campaign) {
             throw new ApiException('找不到活动信息');
         }
 
-        if (empty($this->chanceId)) {
+        if ('' === $this->chanceId) {
             // 检查用户是否有有效的机会
             $chance = $this->chanceRepository->findOneBy([
                 'user' => $this->security->getUser(),
@@ -63,7 +65,7 @@ class ConsumeCampaignChance extends LockableProcedure
             ]);
         }
 
-        if ($chance === null) {
+        if (null === $chance) {
             throw new ApiException('您暂时没有资格参与该活动');
         }
 

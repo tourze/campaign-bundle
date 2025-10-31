@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CampaignBundle\Procedure;
 
 use CampaignBundle\Entity\Category;
@@ -10,6 +12,7 @@ use Tourze\DoctrineHelper\CacheHelper;
 use Tourze\JsonRPC\Core\Attribute\MethodDoc;
 use Tourze\JsonRPC\Core\Attribute\MethodExpose;
 use Tourze\JsonRPC\Core\Attribute\MethodTag;
+use Tourze\JsonRPC\Core\Model\JsonRpcParams;
 use Tourze\JsonRPC\Core\Model\JsonRpcRequest;
 use Tourze\JsonRPCCacheBundle\Procedure\CacheableProcedure;
 use Tourze\JsonRPCPaginatorBundle\Procedure\PaginatorTrait;
@@ -34,15 +37,20 @@ class GetCampaignCategoryList extends CacheableProcedure
             ->createQueryBuilder('a')
             ->where('a.valid = true')
             ->addOrderBy('a.sortNumber', 'DESC')
-            ->addOrderBy('a.id', 'DESC');
+            ->addOrderBy('a.id', 'DESC')
+        ;
 
         return $this->fetchList($qb, $this->formatItem(...));
     }
 
     public function getCacheKey(JsonRpcRequest $request): string
     {
-        $key = static::buildParamCacheKey($request->getParams());
-        if ($this->security->getUser() !== null) {
+        $params = $request->getParams();
+        if (null === $params) {
+            $params = new JsonRpcParams([]);
+        }
+        $key = static::buildParamCacheKey($params);
+        if (null !== $this->security->getUser()) {
             $key .= '-' . $this->security->getUser()->getUserIdentifier();
         }
 
@@ -59,8 +67,17 @@ class GetCampaignCategoryList extends CacheableProcedure
         yield CacheHelper::getClassTags(Category::class);
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     private function formatItem(Category $category): array
     {
-        return $this->normalizer->normalize($category, 'array', ['groups' => 'restful_read']);
+        $result = $this->normalizer->normalize($category, 'array', ['groups' => 'restful_read']);
+        if (!is_array($result)) {
+            throw new \InvalidArgumentException('Expected array result from normalizer');
+        }
+
+        /** @var array<string, mixed> $result */
+        return $result;
     }
 }

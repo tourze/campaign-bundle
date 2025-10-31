@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CampaignBundle\Procedure;
 
 use CampaignBundle\Entity\Reward;
@@ -7,8 +9,6 @@ use CampaignBundle\Enum\AwardType;
 use CampaignBundle\Repository\AwardRepository;
 use CampaignBundle\Repository\CampaignRepository;
 use CampaignBundle\Repository\RewardRepository;
-use Doctrine\Common\Collections\Criteria;
-use OrderCoreBundle\Repository\OfferChanceRepository;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Tourze\JsonRPC\Core\Attribute\MethodDoc;
@@ -38,17 +38,17 @@ class GetCampaignRewards extends BaseProcedure
         private readonly RewardRepository $rewardRepository,
         private readonly AwardRepository $awardRepository,
         private readonly Security $security,
-        private readonly ?OfferChanceRepository $offerChanceRepository,
     ) {
     }
 
+    /** @return array<string, mixed> */
     public function execute(): array
     {
         $campaign = $this->campaignRepository->findOneBy([
             'code' => $this->campaignCode,
             'valid' => true,
         ]);
-        if ($campaign === null) {
+        if (null === $campaign) {
             throw new ApiException('找不到活动信息');
         }
 
@@ -57,8 +57,9 @@ class GetCampaignRewards extends BaseProcedure
             ->where('a.user = :user and a.campaign = :campaign')
             ->setParameter('user', $this->security->getUser())
             ->setParameter('campaign', $campaign)
-            ->orderBy('a.id', Criteria::DESC);
-        if (!empty($this->event)) {
+            ->orderBy('a.id', 'DESC')
+        ;
+        if ('' !== $this->event) {
             $award = $this->awardRepository->findBy([
                 'campaign' => $campaign,
                 'event' => $this->event,
@@ -71,16 +72,11 @@ class GetCampaignRewards extends BaseProcedure
         return $this->fetchList($qb, $this->formatItem(...));
     }
 
+    /** @return array<string, mixed> */
     private function formatItem(Reward $reward): array
     {
         $re = $reward->retrieveApiArray();
         $re['valid'] = false;
-        if (in_array($reward->getType(), [AwardType::SPU_QUALIFICATION, AwardType::SKU_QUALIFICATION])) {
-            $offerChance = $this->offerChanceRepository->find($reward->getSn());
-            if ($offerChance !== null && $offerChance->getValid()) {
-                $re['valid'] = true;
-            }
-        }
 
         return $re;
     }

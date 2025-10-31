@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CampaignBundle\Procedure;
 
 use CampaignBundle\Entity\Chance;
@@ -10,6 +12,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Monolog\Attribute\WithMonologChannel;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Tourze\EcolBundle\Service\Engine;
 use Tourze\JsonRPC\Core\Attribute\MethodDoc;
@@ -53,7 +56,7 @@ class RequestCampaignChance extends LockableProcedure
             'code' => $this->campaignCode,
             'valid' => true,
         ]);
-        if ($campaign === null) {
+        if (null === $campaign) {
             throw new ApiException('找不到活动信息');
         }
 
@@ -65,13 +68,15 @@ class RequestCampaignChance extends LockableProcedure
         ], ['id' => 'DESC']);
 
         // 没机会的话，尝试下分配机会
-        if ($chance === null) {
-            if (empty($campaign->getRequestExpression())) {
+        if (null === $chance) {
+            if (null === $campaign->getRequestExpression() || '' === $campaign->getRequestExpression()) {
                 throw new ApiException('请联系客服设置机会条件');
             }
 
-            /** @var \Symfony\Component\Security\Core\User\UserInterface $user */
             $user = $this->security->getUser();
+            if (!$user instanceof UserInterface) {
+                throw new \InvalidArgumentException('Expected UserInterface instance');
+            }
 
             $values = [
                 'user' => $user,
@@ -83,10 +88,9 @@ class RequestCampaignChance extends LockableProcedure
 
             $checkRes = false;
             try {
-                $this->logger->debug('执行活动配置中的表达式', [
+                $this->logger->debug('执行活动配置中的表达式', array_merge([
                     'expression' => $campaign->getRequestExpression(),
-                    ...$values,
-                ]);
+                ], $values));
                 $checkRes = $this->engine->evaluate($campaign->getRequestExpression(), $values);
             } catch (ApiException $exception) {
                 throw $exception;
@@ -107,7 +111,10 @@ class RequestCampaignChance extends LockableProcedure
             $chance->setCampaign($campaign);
             $chance->setUser($this->security->getUser());
             $chance->setStartTime(CarbonImmutable::now());
-            $chance->setExpireTime($campaign->getEndTime());
+            $endTime = $campaign->getEndTime();
+            if (null !== $endTime) {
+                $chance->setExpireTime($endTime);
+            }
             $chance->setValid(true);
             $this->entityManager->persist($chance);
             $this->entityManager->flush();

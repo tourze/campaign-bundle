@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CampaignBundle\Event;
 
 use CampaignBundle\Entity\EventLog;
@@ -7,13 +9,16 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 class UserEventReportEvent extends Event
 {
+    /** @var array<string, mixed> */
     private array $result = [];
 
+    /** @return array<string, mixed> */
     public function getResult(): array
     {
         return $this->result;
     }
 
+    /** @param array<string, mixed> $result */
     public function setResult(array $result): void
     {
         $this->result = $result;
@@ -21,6 +26,7 @@ class UserEventReportEvent extends Event
 
     private string $event;
 
+    /** @var array<string, mixed> */
     private array $params = [];
 
     private EventLog $log;
@@ -40,11 +46,13 @@ class UserEventReportEvent extends Event
         $this->event = $event;
     }
 
+    /** @return array<string, mixed> */
     public function getParams(): array
     {
         return $this->params;
     }
 
+    /** @param array<string, mixed> $params */
     public function setParams(array $params): void
     {
         $this->params = $params;

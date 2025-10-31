@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CampaignBundle\Command;
 
 use CampaignBundle\Entity\Chance;
@@ -17,6 +19,7 @@ use Tourze\Symfony\CronJob\Attribute\AsCronTask;
 class ChanceExpireCommand extends Command
 {
     public const NAME = 'campaign:chance-expire';
+
     public function __construct(
         private readonly ChanceRepository $chanceRepository,
         private readonly EntityManagerInterface $entityManager,
@@ -30,9 +33,12 @@ class ChanceExpireCommand extends Command
             ->where('a.valid = true AND a.expireTime <= :now')
             ->setParameter('now', CarbonImmutable::now())
             ->getQuery()
-            ->toIterable();
+            ->toIterable()
+        ;
         foreach ($chances as $chance) {
-            /* @var Chance $chance */
+            if (!$chance instanceof Chance) {
+                throw new \InvalidArgumentException('Expected Chance instance');
+            }
             $chance->setRemark(__METHOD__ . '过期处理' . CarbonImmutable::now()->toString());
             $chance->setValid(false);
             $this->entityManager->persist($chance);

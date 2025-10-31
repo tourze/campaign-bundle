@@ -1,11 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CampaignBundle\Procedure;
 
 use CampaignBundle\Entity\EventLog;
 use CampaignBundle\Repository\CampaignRepository;
 use CampaignBundle\Repository\EventLogRepository;
-use Doctrine\Common\Collections\Criteria;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
@@ -39,13 +40,14 @@ class GetCampaignEventLogs extends BaseProcedure
     ) {
     }
 
+    /** @return array<string, mixed> */
     public function execute(): array
     {
         $campaign = $this->campaignRepository->findOneBy([
             'code' => $this->campaignCode,
             'valid' => true,
         ]);
-        if ($campaign === null) {
+        if (null === $campaign) {
             throw new ApiException('找不到活动信息');
         }
 
@@ -53,8 +55,9 @@ class GetCampaignEventLogs extends BaseProcedure
             ->createQueryBuilder('a')
             ->where('a.user = :user')
             ->setParameter('user', $this->security->getUser())
-            ->orderBy('a.id', Criteria::DESC);
-        if (!empty($this->event)) {
+            ->orderBy('a.id', 'DESC')
+        ;
+        if ('' !== $this->event) {
             $qb->andWhere('a.event = :event');
             $qb->setParameter('event', $this->event);
         }
@@ -62,8 +65,17 @@ class GetCampaignEventLogs extends BaseProcedure
         return $this->fetchList($qb, $this->formatItem(...));
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     private function formatItem(EventLog $item): array
     {
-        return $this->normalizer->normalize($item, 'array', ['groups' => 'restful_read']);
+        $result = $this->normalizer->normalize($item, 'array', ['groups' => 'restful_read']);
+        if (!is_array($result)) {
+            throw new \InvalidArgumentException('Expected array result from normalizer');
+        }
+
+        /** @var array<string, mixed> $result */
+        return $result;
     }
 }

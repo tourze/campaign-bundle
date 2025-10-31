@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CampaignBundle\Procedure;
 
 use CampaignBundle\Repository\CampaignRepository;
@@ -20,6 +22,9 @@ class GetCampaignConfig extends BaseProcedure
     #[MethodParam(description: '活动代号')]
     public string $campaignCode;
 
+    /**
+     * @var array<string, mixed>
+     */
     #[MethodParam(description: '路由参数')]
     public array $routerParams = [];
 
@@ -30,13 +35,14 @@ class GetCampaignConfig extends BaseProcedure
     ) {
     }
 
+    /** @return array<string, mixed> */
     public function execute(): array
     {
         $campaign = $this->campaignRepository->findOneBy([
             'code' => $this->campaignCode,
             'valid' => true,
         ]);
-        if ($campaign === null) {
+        if (null === $campaign) {
             throw new ApiException('找不到活动信息');
         }
 
@@ -48,20 +54,20 @@ class GetCampaignConfig extends BaseProcedure
             $result['visitUrl'] = str_replace('{webview:routerParams}', http_build_query($this->routerParams), $result['visitUrl']);
         }
 
-        if ($this->security->getUser() !== null) {
+        if (null !== $this->security->getUser()) {
             $result['visitUrl'] = $this->textFormatter->formatText($result['visitUrl'], [
                 'user' => $this->security->getUser(),
                 'campaign' => $campaign,
             ]);
         }
 
-        if ($campaign->getShareImg() !== null) {
+        if (null !== $campaign->getShareImg()) {
             $config = [
                 'title' => $campaign->getShareTitle(),
                 'imageUrl' => $campaign->getShareImg(),
                 'path' => "/pages/webview/campaign?code={$campaign->getCode()}",
             ];
-            if ($this->security->getUser() !== null) {
+            if (null !== $this->security->getUser()) {
                 $config['path'] = "{$config['path']}&shareUser={$this->security->getUser()->getUserIdentifier()}";
             }
 
