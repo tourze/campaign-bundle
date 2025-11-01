@@ -58,7 +58,7 @@
     "tourze/order-core-bundle": "0.0.*",
     "tourze/product-core-bundle": "0.0.*",
     "tourze/product-service-contracts": "1.0.*",
-    "tourze/symfony-aop-doctrine-bundle": "0.0.*",
+    "tourze/symfony-aop-doctrine-bundle": "1.0.*",
     "tourze/symfony-cron-job-bundle": "1.0.*",
     "tourze/symfony-ecol-bundle": "1.0.*",
     "tourze/text-manage-bundle": "0.0.*",
