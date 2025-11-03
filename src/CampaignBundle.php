@@ -13,6 +13,7 @@ use Tourze\BundleDependency\BundleDependencyInterface;
 use Tourze\CouponCoreBundle\CouponCoreBundle;
 use Tourze\DoctrineResolveTargetEntityBundle\DoctrineResolveTargetEntityBundle;
 use Tourze\DoctrineSnowflakeBundle\DoctrineSnowflakeBundle;
+use Tourze\EasyAdminMenuBundle\EasyAdminMenuBundle;
 use Tourze\EcolBundle\EcolBundle;
 use Tourze\JsonRPCCacheBundle\JsonRPCCacheBundle;
 use Tourze\JsonRPCLockBundle\JsonRPCLockBundle;
@@ -41,6 +42,7 @@ class CampaignBundle extends Bundle implements BundleDependencyInterface
             JsonRPCPaginatorBundle::class => ['all' => true],
             JsonRPCSecurityBundle::class => ['all' => true],
             TextManageBundle::class => ['all' => true],
+            EasyAdminMenuBundle::class => ['all' => true],
             EcolBundle::class => ['all' => true],
             OrderCoreBundle::class => ['all' => true],
             UserTagBundle::class => ['all' => true],
