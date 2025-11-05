@@ -39,7 +39,7 @@
     "tourze/biz-user-bundle": "0.0.*",
     "tourze/bundle-dependency": "1.*",
     "tourze/coupon-core-bundle": "0.0.*",
-    "tourze/credit-bundle": "0.0.*",
+    "tourze/credit-bundle": "1.0.*",
     "tourze/doctrine-helper": "1.0.*",
     "tourze/doctrine-indexed-bundle": "1.0.*",
     "tourze/doctrine-resolve-target-entity-bundle": "1.*",
