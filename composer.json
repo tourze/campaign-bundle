@@ -55,7 +55,7 @@
     "tourze/json-rpc-lock-bundle": "1.0.*",
     "tourze/json-rpc-log-bundle": "1.0.*",
     "tourze/json-rpc-paginator-bundle": "1.0.*",
-    "tourze/order-core-bundle": "0.0.*",
+    "tourze/order-core-bundle": "1.0.*",
     "tourze/product-core-bundle": "1.0.*",
     "tourze/product-service-contracts": "1.0.*",
     "tourze/symfony-aop-doctrine-bundle": "1.0.*",
