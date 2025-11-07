@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace CampaignBundle\DataFixtures;
 
-use BizUserBundle\Entity\BizUser;
 use CampaignBundle\Entity\Award;
 use CampaignBundle\Entity\Campaign;
 use CampaignBundle\Entity\Reward;
@@ -13,6 +12,7 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\DependencyInjection\Attribute\When;
+use Tourze\UserServiceContracts\UserManagerInterface;
 
 #[When(env: 'test')]
 #[When(env: 'dev')]
@@ -21,6 +21,10 @@ class RewardFixtures extends Fixture implements DependentFixtureInterface
     public const REWARD_CREDIT_REFERENCE = 'reward-credit';
     public const REWARD_COUPON_REFERENCE = 'reward-coupon';
 
+    public function __construct(private readonly UserManagerInterface $userManager)
+    {
+    }
+
     public function load(ObjectManager $manager): void
     {
         $campaign = $this->getReference(BasicCampaignFixtures::CAMPAIGN_TYJG_REFERENCE, Campaign::class);
@@ -28,11 +32,8 @@ class RewardFixtures extends Fixture implements DependentFixtureInterface
         $couponAward = $this->getReference(AwardFixtures::AWARD_COUPON_REFERENCE, Award::class);
 
         // 创建测试用户
-        $user = new BizUser();
-        $user->setUsername('test_user');
-        $user->setEmail('test@test.local');
-        $user->setPasswordHash('hashed_password');
-        $manager->persist($user);
+        $user = $this->userManager->createUser('test_user');
+        $this->userManager->saveUser($user);
 
         // 创建积分奖励记录
         $creditReward = new Reward();
