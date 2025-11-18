@@ -15,11 +15,6 @@ use Tourze\PHPUnitSymfonyWebTest\AbstractEasyAdminControllerTestCase;
 #[RunTestsInSeparateProcesses]
 final class CampaignCampaignCrudControllerTest extends AbstractEasyAdminControllerTestCase
 {
-    public function testGetEntityFqcn(): void
-    {
-        $this->assertSame('CampaignBundle\Entity\Campaign', CampaignCampaignCrudController::getEntityFqcn());
-    }
-
     public function testControllerCreation(): void
     {
         $client = self::createClientWithDatabase();

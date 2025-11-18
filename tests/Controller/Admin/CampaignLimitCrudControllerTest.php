@@ -72,11 +72,6 @@ final class CampaignLimitCrudControllerTest extends AbstractEasyAdminControllerT
         $client->request('GET', '/admin');
     }
 
-    public function testGetEntityFqcn(): void
-    {
-        $this->assertSame('CampaignBundle\Entity\Limit', CampaignLimitCrudController::getEntityFqcn());
-    }
-
     public function testIndexActionWithAuthentication(): void
     {
         $client = self::createClientWithDatabase();

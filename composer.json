@@ -4,7 +4,7 @@
   "type": "symfony-bundle",
   "license": "MIT",
   "require": {
-    "php": "^8.1",
+    "php": "^8.2",
     "ext-SPL": "*",
     "ext-date": "*",
     "doctrine/collections": "^2.3",
@@ -17,12 +17,14 @@
     "symfony/config": "^7.3",
     "symfony/console": "^7.3",
     "symfony/dependency-injection": "^7.3",
+    "symfony/doctrine-bridge": "^7.3",
     "symfony/event-dispatcher-contracts": "^3",
     "symfony/expression-language": "^7.3",
     "symfony/framework-bundle": "^7.3",
     "symfony/http-kernel": "^7.3",
     "symfony/security-bundle": "^7.3",
     "symfony/security-core": "^7.3",
+    "symfony/yaml": "^7.3",
     "tourze/arrayable": "1.*",
     "tourze/bundle-dependency": "1.*",
     "tourze/doctrine-indexed-bundle": "1.0.*",
@@ -42,11 +44,6 @@
     "tourze/text-manage-bundle": "1.0.*",
     "tourze/user-tag-contracts": "1.0.*"
   },
-  "suggest": {
-    "tourze/campaign-coupon-bundle": "Add coupon reward support to campaigns",
-    "tourze/campaign-credit-bundle": "Add credit/points reward support to campaigns",
-    "tourze/campaign-product-bundle": "Add SKU/SPU qualification reward support to campaigns"
-  },
   "require-dev": {
     "phpstan/phpstan": "^2.1",
     "phpunit/phpunit": "^11.5",
@@ -58,6 +55,11 @@
     "tourze/phpunit-symfony-unit-test": "1.*",
     "tourze/phpunit-symfony-web-test": "1.*",
     "tourze/symfony-dependency-service-loader": "1.0.*"
+  },
+  "suggest": {
+    "tourze/campaign-coupon-bundle": "Add coupon reward support to campaigns",
+    "tourze/campaign-credit-bundle": "Add credit/points reward support to campaigns",
+    "tourze/campaign-product-bundle": "Add SKU/SPU qualification reward support to campaigns"
   },
   "autoload": {
     "psr-4": {

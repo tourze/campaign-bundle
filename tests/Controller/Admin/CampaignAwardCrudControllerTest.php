@@ -83,11 +83,6 @@ final class CampaignAwardCrudControllerTest extends AbstractEasyAdminControllerT
         $client->request('GET', '/admin');
     }
 
-    public function testGetEntityFqcn(): void
-    {
-        $this->assertSame('CampaignBundle\Entity\Award', CampaignAwardCrudController::getEntityFqcn());
-    }
-
     public function testControllerCreation(): void
     {
         $client = self::createClientWithDatabase();

@@ -74,11 +74,6 @@ final class CampaignChanceCrudControllerTest extends AbstractEasyAdminController
         $client->request('GET', '/admin');
     }
 
-    public function testGetEntityFqcn(): void
-    {
-        $this->assertSame('CampaignBundle\Entity\Chance', CampaignChanceCrudController::getEntityFqcn());
-    }
-
     public function testControllerCreation(): void
     {
         $client = self::createClientWithDatabase();

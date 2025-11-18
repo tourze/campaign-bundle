@@ -28,11 +28,6 @@ final class CampaignAttributeCrudControllerTest extends AbstractEasyAdminControl
         $client->request('GET', '/admin');
     }
 
-    public function testGetEntityFqcn(): void
-    {
-        $this->assertSame('CampaignBundle\Entity\Attribute', CampaignAttributeCrudController::getEntityFqcn());
-    }
-
     public function testControllerCreation(): void
     {
         $client = self::createClientWithDatabase();

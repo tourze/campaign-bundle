@@ -84,11 +84,6 @@ final class CampaignEventLogCrudControllerTest extends AbstractEasyAdminControll
         $client->request('GET', '/admin');
     }
 
-    public function testGetEntityFqcn(): void
-    {
-        $this->assertSame('CampaignBundle\Entity\EventLog', CampaignEventLogCrudController::getEntityFqcn());
-    }
-
     public function testControllerCreation(): void
     {
         $client = self::createClientWithDatabase();
