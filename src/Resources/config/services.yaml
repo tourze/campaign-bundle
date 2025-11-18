@@ -3,49 +3,25 @@ services:
     autowire: true
     autoconfigure: true
 
-  # Commands
-  CampaignBundle\Command\ChanceExpireCommand: ~
-  CampaignBundle\Command\CheckExpiredCampaignCommand: ~
+  # 自动标记所有奖励处理器
+  _instanceof:
+    CampaignBundle\Contract\RewardProcessorInterface:
+      tags: ['campaign.reward_processor']
 
-  # Controllers
-  CampaignBundle\Controller\Admin\CampaignAttributeCrudController: ~
-  CampaignBundle\Controller\Admin\CampaignAwardCrudController: ~
-  CampaignBundle\Controller\Admin\CampaignCampaignCrudController: ~
-  CampaignBundle\Controller\Admin\CampaignCategoryCrudController: ~
-  CampaignBundle\Controller\Admin\CampaignChanceCrudController: ~
-  CampaignBundle\Controller\Admin\CampaignEventLogCrudController: ~
-  CampaignBundle\Controller\Admin\CampaignLimitCrudController: ~
-  CampaignBundle\Controller\Admin\CampaignRewardCrudController: ~
+  # 注册处理器注册表
+  CampaignBundle\Service\RewardProcessorRegistry:
+    arguments:
+      $processors: !tagged_iterator campaign.reward_processor
 
-  # ExpressionLanguage Functions
-  CampaignBundle\ExpressionLanguage\Function\ChanceFunctionProvider: ~
-
-  # Procedures
-  CampaignBundle\Procedure\ConsumeCampaignChance: ~
-  CampaignBundle\Procedure\GetCampaignCategoryList: ~
-  CampaignBundle\Procedure\GetCampaignConfig: ~
-  CampaignBundle\Procedure\GetCampaignEventLogs: ~
-  CampaignBundle\Procedure\GetCampaignRewards: ~
-  CampaignBundle\Procedure\ReportCampaignEventLog: ~
-  CampaignBundle\Procedure\RequestCampaignChance: ~
-
-  # Repositories  
-  CampaignBundle\Repository\CampaignRepository: ~
-  CampaignBundle\Repository\ChanceRepository: ~
-  CampaignBundle\Repository\RewardRepository: ~
-  CampaignBundle\Repository\AttributeRepository: ~
-  CampaignBundle\Repository\AwardRepository: ~
-  CampaignBundle\Repository\CategoryRepository: ~
-  CampaignBundle\Repository\EventLogRepository: ~
-  CampaignBundle\Repository\LimitRepository: ~
-
-  # Services
-  CampaignBundle\Service\AdminMenu: ~
-  CampaignBundle\Service\CampaignService: ~
-  CampaignBundle\Service\CampaignLimitService: ~
-  CampaignBundle\Service\CampaignRewardService: ~
-  CampaignBundle\Service\CampaignRewardProcessorService: ~
-
-  # Service aliases
-  Tourze\UserTagContracts\TagLoaderInterface:
-    alias: UserTagBundle\Service\LocalUserTagLoader
+  CampaignBundle\Command\:
+    resource: '../../Command/'
+  CampaignBundle\Controller\:
+    resource: '../../Controller/'
+  CampaignBundle\ExpressionLanguage\:
+    resource: '../../ExpressionLanguage/'
+  CampaignBundle\Procedure\:
+    resource: '../../Procedure/'
+  CampaignBundle\Repository\:
+    resource: '../../Repository/'
+  CampaignBundle\Service\:
+    resource: '../../Service/'

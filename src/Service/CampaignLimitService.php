@@ -22,7 +22,7 @@ readonly class CampaignLimitService
     public function __construct(
         private ChanceRepository $chanceRepository,
         private EntityManagerInterface $entityManager,
-        private TagLoaderInterface $userTagService,
+        private ?TagLoaderInterface $userTagService,
     ) {
     }
 
@@ -56,8 +56,10 @@ readonly class CampaignLimitService
         // 检查标签情况
         if (LimitType::USER_TAG === $limit->getType()) {
             $userTagNames = [];
-            foreach ($this->userTagService->loadTagsByUser($user) as $tag) {
-                $userTagNames[] = $tag->getName();
+            if ($this->userTagService) {
+                foreach ($this->userTagService->loadTagsByUser($user) as $tag) {
+                    $userTagNames[] = $tag->getName();
+                }
             }
             if (false === in_array($limit->getValue(), $userTagNames, true)) {
                 return false;
