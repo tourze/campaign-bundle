@@ -11,10 +11,13 @@ use Tourze\BundleDependency\BundleDependencyInterface;
 use Tourze\DoctrineResolveTargetEntityBundle\DoctrineResolveTargetEntityBundle;
 use Tourze\DoctrineSnowflakeBundle\DoctrineSnowflakeBundle;
 use Tourze\EasyAdminMenuBundle\EasyAdminMenuBundle;
+use Tourze\EcolBundle\EcolBundle;
 use Tourze\JsonRPCCacheBundle\JsonRPCCacheBundle;
 use Tourze\JsonRPCLockBundle\JsonRPCLockBundle;
 use Tourze\JsonRPCLogBundle\JsonRPCLogBundle;
+use Tourze\JsonRPCPaginatorBundle\JsonRPCPaginatorBundle;
 use Tourze\Symfony\CronJob\CronJobBundle;
+use Tourze\TextManageBundle\TextManageBundle;
 
 /**
  * Campaign Bundle - 核心活动管理 Bundle
@@ -48,7 +51,10 @@ class CampaignBundle extends Bundle implements BundleDependencyInterface
             JsonRPCCacheBundle::class => ['all' => true],
             JsonRPCLockBundle::class => ['all' => true],
             JsonRPCLogBundle::class => ['all' => true],
+            JsonRPCPaginatorBundle::class => ['all' => true],
             EasyAdminMenuBundle::class => ['all' => true],
+            TextManageBundle::class => ['all' => true],
+            EcolBundle::class => ['all' => true],
         ];
     }
 }

@@ -8,11 +8,6 @@ services:
     CampaignBundle\Contract\RewardProcessorInterface:
       tags: ['campaign.reward_processor']
 
-  # 注册处理器注册表
-  CampaignBundle\Service\RewardProcessorRegistry:
-    arguments:
-      $processors: !tagged_iterator campaign.reward_processor
-
   CampaignBundle\Command\:
     resource: '../../Command/'
   CampaignBundle\Controller\:

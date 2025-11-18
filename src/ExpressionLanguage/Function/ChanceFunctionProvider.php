@@ -6,6 +6,7 @@ namespace CampaignBundle\ExpressionLanguage\Function;
 
 use CampaignBundle\Entity\Campaign;
 use CampaignBundle\Repository\ChanceRepository;
+use Monolog\Attribute\WithMonologChannel;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
@@ -18,14 +19,9 @@ use Symfony\Component\Security\Core\User\UserInterface;
  */
 #[Autoconfigure(public: true)]
 #[AutoconfigureTag(name: 'ecol.function.provider')]
+#[WithMonologChannel(channel: 'campaign')]
 readonly class ChanceFunctionProvider implements ExpressionFunctionProviderInterface
 {
-    /**
-     * 构造函数。
-     *
-     * @param ChanceRepository $chanceRepository 机会仓储
-     * @param LoggerInterface $logger 日志记录器
-     */
     public function __construct(
         private ChanceRepository $chanceRepository,
         private LoggerInterface $logger,

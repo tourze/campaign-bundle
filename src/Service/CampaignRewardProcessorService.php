@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace CampaignBundle\Service;
 
+use CampaignBundle\Contract\RewardProcessorInterface;
 use CampaignBundle\Entity\Award;
 use CampaignBundle\Entity\Reward;
 use CampaignBundle\Exception\UnsupportedRewardTypeException;
+use Monolog\Attribute\WithMonologChannel;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -20,9 +22,10 @@ use Symfony\Component\Security\Core\User\UserInterface;
  * - v1.x：直接处理所有奖励类型，硬编码业务逻辑
  * - v2.x：使用 RewardProcessorRegistry 委托给独立的处理器
  *
- * @see \CampaignBundle\Service\RewardProcessorRegistry
- * @see \CampaignBundle\Contract\RewardProcessorInterface
+ * @see RewardProcessorRegistry
+ * @see RewardProcessorInterface
  */
+#[WithMonologChannel(channel: 'campaign')]
 readonly class CampaignRewardProcessorService
 {
     public function __construct(

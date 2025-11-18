@@ -6,6 +6,7 @@ namespace CampaignBundle\Service;
 
 use CampaignBundle\Contract\RewardProcessorInterface;
 use CampaignBundle\Enum\AwardType;
+use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
 
 /**
  * 奖励处理器注册表
@@ -20,25 +21,14 @@ use CampaignBundle\Enum\AwardType;
  *     $processor->process($user, $award, $reward);
  * }
  * ```
- *
- * @see \CampaignBundle\Contract\RewardProcessorInterface
  */
 readonly class RewardProcessorRegistry
 {
     /**
-     * @var list<RewardProcessorInterface> 已注册的处理器列表
-     */
-    private array $processors;
-
-    /**
      * @param iterable<RewardProcessorInterface> $processors 处理器迭代器（由 Symfony DI 注入）
      */
-    public function __construct(iterable $processors)
+    public function __construct(#[AutowireIterator(tag: 'campaign.reward_processor')] private iterable $processors)
     {
-        // 将迭代器转换为数组以便多次遍历
-        $this->processors = $processors instanceof \Traversable
-            ? iterator_to_array($processors)
-            : (array) $processors;
     }
 
     /**

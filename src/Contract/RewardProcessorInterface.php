@@ -7,6 +7,7 @@ namespace CampaignBundle\Contract;
 use CampaignBundle\Entity\Award;
 use CampaignBundle\Entity\Reward;
 use CampaignBundle\Enum\AwardType;
+use CampaignBundle\Service\RewardProcessorRegistry;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
@@ -36,7 +37,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
  * }
  * ```
  *
- * @see \CampaignBundle\Service\RewardProcessorRegistry
+ * @see RewardProcessorRegistry
  */
 interface RewardProcessorInterface
 {
