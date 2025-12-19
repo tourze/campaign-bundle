@@ -3,7 +3,6 @@
 namespace CampaignBundle\Tests\Controller\Admin;
 
 use CampaignBundle\Controller\Admin\CampaignRewardCrudController;
-use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
@@ -17,10 +16,7 @@ use Tourze\PHPUnitSymfonyWebTest\AbstractEasyAdminControllerTestCase;
 #[RunTestsInSeparateProcesses]
 final class CampaignRewardCrudControllerTest extends AbstractEasyAdminControllerTestCase
 {
-    /**
-     * @phpstan-ignore-next-line missingType.generics
-     */
-    protected function getControllerService(): AbstractCrudController
+    protected function getControllerService(): CampaignRewardCrudController
     {
         return self::getService(CampaignRewardCrudController::class);
     }

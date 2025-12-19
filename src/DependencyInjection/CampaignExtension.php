@@ -6,7 +6,7 @@ namespace CampaignBundle\DependencyInjection;
 
 use Tourze\SymfonyDependencyServiceLoader\AutoExtension;
 
-class CampaignExtension extends AutoExtension
+final class CampaignExtension extends AutoExtension
 {
     protected function getConfigDir(): string
     {

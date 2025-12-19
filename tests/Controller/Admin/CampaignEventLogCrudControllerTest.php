@@ -8,7 +8,6 @@ use CampaignBundle\Controller\Admin\CampaignEventLogCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
-use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Exception\EntityNotFoundException;
 use EasyCorp\Bundle\EasyAdminBundle\Exception\ForbiddenActionException;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -29,8 +28,7 @@ use Tourze\PHPUnitSymfonyWebTest\AbstractEasyAdminControllerTestCase;
 #[RunTestsInSeparateProcesses]
 final class CampaignEventLogCrudControllerTest extends AbstractEasyAdminControllerTestCase
 {
-    /** @phpstan-ignore-next-line missingType.generics */
-    protected function getControllerService(): AbstractCrudController
+    protected function getControllerService(): CampaignEventLogCrudController
     {
         return self::getService(CampaignEventLogCrudController::class);
     }

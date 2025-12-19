@@ -15,7 +15,7 @@ use Tourze\PHPUnitSymfonyKernelTest\Attribute\AsRepository;
  * @extends ServiceEntityRepository<Award>
  */
 #[AsRepository(entityClass: Award::class)]
-class AwardRepository extends ServiceEntityRepository
+final class AwardRepository extends ServiceEntityRepository
 {
     /**
      * 构造函数。

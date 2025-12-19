@@ -5,13 +5,15 @@ declare(strict_types=1);
 namespace CampaignBundle\Procedure;
 
 use CampaignBundle\Entity\Category;
+use CampaignBundle\Param\GetCampaignCategoryListParam;
 use CampaignBundle\Repository\CategoryRepository;
 use Symfony\Bundle\SecurityBundle\Security;
-use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Tourze\DoctrineHelper\CacheHelper;
 use Tourze\JsonRPC\Core\Attribute\MethodDoc;
 use Tourze\JsonRPC\Core\Attribute\MethodExpose;
 use Tourze\JsonRPC\Core\Attribute\MethodTag;
+use Tourze\JsonRPC\Core\Contracts\RpcParamInterface;
+use Tourze\JsonRPC\Core\Result\ArrayResult;
 use Tourze\JsonRPC\Core\Model\JsonRpcParams;
 use Tourze\JsonRPC\Core\Model\JsonRpcRequest;
 use Tourze\JsonRPCCacheBundle\Procedure\CacheableProcedure;
@@ -26,12 +28,14 @@ class GetCampaignCategoryList extends CacheableProcedure
 
     public function __construct(
         private readonly CategoryRepository $categoryRepository,
-        private readonly NormalizerInterface $normalizer,
         private readonly Security $security,
     ) {
     }
 
-    public function execute(): array
+    /**
+     * @phpstan-param GetCampaignCategoryListParam $param
+     */
+    public function execute(GetCampaignCategoryListParam|RpcParamInterface $param): ArrayResult
     {
         $qb = $this->categoryRepository
             ->createQueryBuilder('a')
@@ -40,7 +44,7 @@ class GetCampaignCategoryList extends CacheableProcedure
             ->addOrderBy('a.id', 'DESC')
         ;
 
-        return $this->fetchList($qb, $this->formatItem(...));
+        return new ArrayResult($this->fetchList($qb, $this->formatItem(...), null, $param));
     }
 
     public function getCacheKey(JsonRpcRequest $request): string
@@ -54,7 +58,7 @@ class GetCampaignCategoryList extends CacheableProcedure
             $key .= '-' . $this->security->getUser()->getUserIdentifier();
         }
 
-        return $key;
+        return new ArrayResult($key);
     }
 
     public function getCacheDuration(JsonRpcRequest $request): int
@@ -72,12 +76,9 @@ class GetCampaignCategoryList extends CacheableProcedure
      */
     private function formatItem(Category $category): array
     {
-        $result = $this->normalizer->normalize($category, 'array', ['groups' => 'restful_read']);
-        if (!is_array($result)) {
-            throw new \InvalidArgumentException('Expected array result from normalizer');
-        }
-
-        /** @var array<string, mixed> $result */
-        return $result;
+        return new ArrayResult([
+            'id' => $category->getId(),
+            'title' => $category->getTitle(),
+        ]);
     }
 }

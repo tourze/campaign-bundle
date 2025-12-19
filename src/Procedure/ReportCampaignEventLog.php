@@ -12,6 +12,7 @@ use CampaignBundle\Event\UserEventReportEvent;
 use CampaignBundle\Exception\AwardUnavailableException;
 use CampaignBundle\Exception\InsufficientStockException;
 use CampaignBundle\Exception\RewardLimitExceededException;
+use CampaignBundle\Param\ReportCampaignEventLogParam;
 use CampaignBundle\Repository\AwardRepository;
 use CampaignBundle\Repository\CampaignRepository;
 use CampaignBundle\Service\CampaignService;
@@ -22,8 +23,9 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Tourze\JsonRPC\Core\Attribute\MethodDoc;
 use Tourze\JsonRPC\Core\Attribute\MethodExpose;
-use Tourze\JsonRPC\Core\Attribute\MethodParam;
 use Tourze\JsonRPC\Core\Attribute\MethodTag;
+use Tourze\JsonRPC\Core\Contracts\RpcParamInterface;
+use Tourze\JsonRPC\Core\Result\ArrayResult;
 use Tourze\JsonRPC\Core\Exception\ApiException;
 use Tourze\JsonRPCLockBundle\Procedure\LockableProcedure;
 use Tourze\JsonRPCLogBundle\Attribute\Log;
@@ -35,18 +37,6 @@ use Tourze\JsonRPCLogBundle\Attribute\Log;
 #[Log]
 class ReportCampaignEventLog extends LockableProcedure
 {
-    #[MethodParam(description: '活动ID')]
-    public string $campaignCode;
-
-    #[MethodParam(description: '事件')]
-    public string $event;
-
-    /**
-     * @var array<string, mixed>
-     */
-    #[MethodParam(description: '参数')]
-    public array $params = [];
-
     public function __construct(
         private readonly CampaignRepository $campaignRepository,
         private readonly CampaignService $campaignService,
@@ -60,27 +50,29 @@ class ReportCampaignEventLog extends LockableProcedure
     /** @var array<string, mixed> */
     private array $result = [];
 
-    /** @return array<string, mixed> */
-    public function execute(): array
+    /**
+     * @phpstan-param ReportCampaignEventLogParam $param
+     */
+    public function execute(ReportCampaignEventLogParam|RpcParamInterface $param): ArrayResult
     {
-        $campaign = $this->findValidCampaign();
-        $log = $this->createEventLog($campaign);
+        $campaign = $this->findValidCampaign($param);
+        $log = $this->createEventLog($campaign, $param);
 
         $this->result = $this->initializeResult($log);
-        $event = $this->dispatchUserEvent($log, $this->result);
+        $event = $this->dispatchUserEvent($log, $this->result, $param);
 
         if (!$event->isHook()) {
-            $this->processAwards($campaign);
+            $this->processAwards($campaign, $param);
             $event->setResult($this->result);
         }
 
         return $event->getResult();
     }
 
-    private function findValidCampaign(): Campaign
+    private function findValidCampaign(ReportCampaignEventLogParam $param): Campaign
     {
         $campaign = $this->campaignRepository->findOneBy([
-            'code' => $this->campaignCode,
+            'code' => $param->campaignCode,
             'valid' => true,
         ]);
 
@@ -88,58 +80,58 @@ class ReportCampaignEventLog extends LockableProcedure
             throw new ApiException('找不到活动信息');
         }
 
-        return $campaign;
+        return new ArrayResult($campaign);
     }
 
-    private function createEventLog(Campaign $campaign): EventLog
+    private function createEventLog(Campaign $campaign, ReportCampaignEventLogParam $param): EventLog
     {
         $log = new EventLog();
         $log->setCampaign($campaign);
         $log->setUser($this->security->getUser());
-        $log->setEvent($this->event);
-        $log->setParams($this->params);
+        $log->setEvent($param->event);
+        $log->setParams($param->params);
         $this->entityManager->persist($log);
         $this->entityManager->flush();
 
-        return $log;
+        return new ArrayResult($log);
     }
 
     /** @return array<string, mixed> */
     private function initializeResult(EventLog $log): array
     {
-        return [
+        return new ArrayResult([
             'id' => $log->getId(),
             'rewards' => [],
-        ];
+        ]);
     }
 
     /** @param array<string, mixed> $result */
-    private function dispatchUserEvent(EventLog $log, array $result): UserEventReportEvent
+    private function dispatchUserEvent(EventLog $log, array $result, ReportCampaignEventLogParam $param): UserEventReportEvent
     {
         $event = new UserEventReportEvent();
-        $event->setEvent($this->event);
-        $event->setParams($this->params);
+        $event->setEvent($param->event);
+        $event->setParams($param->params);
         $event->setLog($log);
         $event->setResult($result);
         $this->eventDispatcher->dispatch($event);
 
-        return $event;
+        return new ArrayResult($event);
     }
 
-    private function processAwards(Campaign $campaign): void
+    private function processAwards(Campaign $campaign, ReportCampaignEventLogParam $param): void
     {
-        $awards = $this->getValidAwards($campaign);
+        $awards = $this->getValidAwards($campaign, $param);
         $this->validateAwardLimits($awards);
         $this->consumeAwardLimits($awards);
         $this->distributeRewards($awards);
     }
 
     /** @return array<Award> */
-    private function getValidAwards(Campaign $campaign): array
+    private function getValidAwards(Campaign $campaign, ReportCampaignEventLogParam $param): array
     {
         $awards = $this->awardRepository->findBy([
             'campaign' => $campaign,
-            'event' => $this->event,
+            'event' => $param->event,
         ]);
 
         // 类型安全过滤和转换
@@ -150,7 +142,7 @@ class ReportCampaignEventLog extends LockableProcedure
             }
         }
 
-        return $filteredAwards;
+        return new ArrayResult($filteredAwards);
     }
 
     /** @param array<Award> $awards */

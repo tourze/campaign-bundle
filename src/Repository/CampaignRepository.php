@@ -15,7 +15,7 @@ use Tourze\PHPUnitSymfonyKernelTest\Attribute\AsRepository;
  * @extends ServiceEntityRepository<Campaign>
  */
 #[AsRepository(entityClass: Campaign::class)]
-class CampaignRepository extends ServiceEntityRepository
+final class CampaignRepository extends ServiceEntityRepository
 {
     /**
      * 构造函数。

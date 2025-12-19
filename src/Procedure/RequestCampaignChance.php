@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace CampaignBundle\Procedure;
 
 use CampaignBundle\Entity\Chance;
+use CampaignBundle\Param\RequestCampaignChanceParam;
 use CampaignBundle\Repository\CampaignRepository;
 use CampaignBundle\Repository\ChanceRepository;
 use Carbon\CarbonImmutable;
@@ -17,8 +18,9 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Tourze\EcolBundle\Service\Engine;
 use Tourze\JsonRPC\Core\Attribute\MethodDoc;
 use Tourze\JsonRPC\Core\Attribute\MethodExpose;
-use Tourze\JsonRPC\Core\Attribute\MethodParam;
 use Tourze\JsonRPC\Core\Attribute\MethodTag;
+use Tourze\JsonRPC\Core\Contracts\RpcParamInterface;
+use Tourze\JsonRPC\Core\Result\ArrayResult;
 use Tourze\JsonRPC\Core\Exception\ApiException;
 use Tourze\JsonRPCLockBundle\Procedure\LockableProcedure;
 use Tourze\JsonRPCLogBundle\Attribute\Log;
@@ -37,9 +39,6 @@ use Tourze\JsonRPCLogBundle\Attribute\Log;
 #[WithMonologChannel(channel: 'procedure')]
 class RequestCampaignChance extends LockableProcedure
 {
-    #[MethodParam(description: '活动代号')]
-    public string $campaignCode;
-
     public function __construct(
         private readonly CampaignRepository $campaignRepository,
         private readonly ChanceRepository $chanceRepository,
@@ -50,10 +49,13 @@ class RequestCampaignChance extends LockableProcedure
     ) {
     }
 
-    public function execute(): array
+    /**
+     * @phpstan-param RequestCampaignChanceParam $param
+     */
+    public function execute(RequestCampaignChanceParam|RpcParamInterface $param): ArrayResult
     {
         $campaign = $this->campaignRepository->findOneBy([
-            'code' => $this->campaignCode,
+            'code' => $param->campaignCode,
             'valid' => true,
         ]);
         if (null === $campaign) {

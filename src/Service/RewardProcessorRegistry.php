@@ -50,7 +50,7 @@ readonly class RewardProcessorRegistry
             }
         }
 
-        if (empty($matched)) {
+        if ([] === $matched) {
             return null;
         }
 
@@ -90,7 +90,7 @@ readonly class RewardProcessorRegistry
      */
     public function getAllProcessors(): array
     {
-        return $this->processors;
+        return iterator_to_array($this->processors, false);
     }
 
     /**

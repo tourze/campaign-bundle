@@ -6,7 +6,6 @@ namespace CampaignBundle\Tests\Controller\Admin;
 
 use CampaignBundle\Controller\Admin\CampaignLimitCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
-use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
@@ -20,12 +19,8 @@ use Tourze\PHPUnitSymfonyWebTest\AbstractEasyAdminControllerTestCase;
 #[RunTestsInSeparateProcesses]
 final class CampaignLimitCrudControllerTest extends AbstractEasyAdminControllerTestCase
 {
-    /**
-     * @phpstan-ignore missingType.generics
-     */
-    protected function getControllerService(): AbstractCrudController
+    protected function getControllerService(): CampaignLimitCrudController
     {
-        /** @var CampaignLimitCrudController */
         return self::getService(CampaignLimitCrudController::class);
     }
 

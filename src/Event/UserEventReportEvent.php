@@ -7,7 +7,7 @@ namespace CampaignBundle\Event;
 use CampaignBundle\Entity\EventLog;
 use Symfony\Contracts\EventDispatcher\Event;
 
-class UserEventReportEvent extends Event
+final class UserEventReportEvent extends Event
 {
     /** @var array<string, mixed> */
     private array $result = [];

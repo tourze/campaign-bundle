@@ -13,7 +13,7 @@ use Tourze\PHPUnitSymfonyKernelTest\Attribute\AsRepository;
  * @extends ServiceEntityRepository<EventLog>
  */
 #[AsRepository(entityClass: EventLog::class)]
-class EventLogRepository extends ServiceEntityRepository
+final class EventLogRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {

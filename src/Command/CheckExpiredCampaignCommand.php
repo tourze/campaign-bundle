@@ -16,7 +16,7 @@ use Tourze\Symfony\CronJob\Attribute\AsCronTask;
 
 #[AsCronTask(expression: '* * * * *')]
 #[AsCommand(name: self::NAME, description: '自动设置过期时间')]
-class CheckExpiredCampaignCommand extends Command
+final class CheckExpiredCampaignCommand extends Command
 {
     public const NAME = 'campaign:check-expired-campaign';
 

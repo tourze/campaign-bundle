@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace CampaignBundle\Procedure;
 
+use CampaignBundle\Param\ConsumeCampaignChanceParam;
 use CampaignBundle\Repository\CampaignRepository;
 use CampaignBundle\Repository\ChanceRepository;
 use Carbon\CarbonImmutable;
@@ -12,8 +13,9 @@ use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Tourze\JsonRPC\Core\Attribute\MethodDoc;
 use Tourze\JsonRPC\Core\Attribute\MethodExpose;
-use Tourze\JsonRPC\Core\Attribute\MethodParam;
 use Tourze\JsonRPC\Core\Attribute\MethodTag;
+use Tourze\JsonRPC\Core\Contracts\RpcParamInterface;
+use Tourze\JsonRPC\Core\Result\ArrayResult;
 use Tourze\JsonRPC\Core\Exception\ApiException;
 use Tourze\JsonRPCLockBundle\Procedure\LockableProcedure;
 use Tourze\JsonRPCLogBundle\Attribute\Log;
@@ -25,12 +27,6 @@ use Tourze\JsonRPCLogBundle\Attribute\Log;
 #[Log]
 class ConsumeCampaignChance extends LockableProcedure
 {
-    #[MethodParam(description: '活动代号')]
-    public string $campaignCode;
-
-    #[MethodParam(description: '机会ID，不传入则自动查找')]
-    public string $chanceId = '';
-
     public function __construct(
         private readonly CampaignRepository $campaignRepository,
         private readonly ChanceRepository $chanceRepository,
@@ -39,17 +35,20 @@ class ConsumeCampaignChance extends LockableProcedure
     ) {
     }
 
-    public function execute(): array
+    /**
+     * @phpstan-param ConsumeCampaignChanceParam $param
+     */
+    public function execute(ConsumeCampaignChanceParam|RpcParamInterface $param): ArrayResult
     {
         $campaign = $this->campaignRepository->findOneBy([
-            'code' => $this->campaignCode,
+            'code' => $param->campaignCode,
             'valid' => true,
         ]);
         if (null === $campaign) {
             throw new ApiException('找不到活动信息');
         }
 
-        if ('' === $this->chanceId) {
+        if ('' === $param->chanceId) {
             // 检查用户是否有有效的机会
             $chance = $this->chanceRepository->findOneBy([
                 'user' => $this->security->getUser(),
@@ -58,7 +57,7 @@ class ConsumeCampaignChance extends LockableProcedure
             ], ['id' => 'DESC']);
         } else {
             $chance = $this->chanceRepository->findOneBy([
-                'id' => $this->chanceId,
+                'id' => $param->chanceId,
                 'user' => $this->security->getUser(),
                 'campaign' => $campaign,
                 'valid' => true,
@@ -75,8 +74,8 @@ class ConsumeCampaignChance extends LockableProcedure
         $this->entityManager->persist($chance);
         $this->entityManager->flush();
 
-        return [
+        return new ArrayResult([
             'maskImg' => 'https://rcroyalclubnmktach.blob.core.chinacloudapi.cn/upload-files/2022/11/TC.png',
-        ];
+        ]);
     }
 }

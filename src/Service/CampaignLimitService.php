@@ -38,35 +38,51 @@ readonly class CampaignLimitService
     {
         // 看这个人是不是有可以使用的机会
         if (LimitType::CHANCE === $limit->getType()) {
-            $award = $limit->getAward();
-            if (null === $award) {
-                return false;
-            }
-
-            $chance = $this->chanceRepository->findOneBy([
-                'campaign' => $award->getCampaign(),
-                'user' => $user,
-                'valid' => true,
-            ]);
-            if (null === $chance) {
-                return false;
-            }
+            return $this->checkChanceLimit($user, $limit);
         }
 
         // 检查标签情况
         if (LimitType::USER_TAG === $limit->getType()) {
-            $userTagNames = [];
-            if ($this->userTagService) {
-                foreach ($this->userTagService->loadTagsByUser($user) as $tag) {
-                    $userTagNames[] = $tag->getName();
-                }
-            }
-            if (false === in_array($limit->getValue(), $userTagNames, true)) {
-                return false;
-            }
+            return $this->checkUserTagLimit($user, $limit);
         }
 
         return true;
+    }
+
+    /**
+     * 检查用户机会限制
+     */
+    private function checkChanceLimit(UserInterface $user, Limit $limit): bool
+    {
+        $award = $limit->getAward();
+        if (null === $award) {
+            return false;
+        }
+
+        $chance = $this->chanceRepository->findOneBy([
+            'campaign' => $award->getCampaign(),
+            'user' => $user,
+            'valid' => true,
+        ]);
+
+        return null !== $chance;
+    }
+
+    /**
+     * 检查用户标签限制
+     */
+    private function checkUserTagLimit(UserInterface $user, Limit $limit): bool
+    {
+        if (null === $this->userTagService) {
+            return false;
+        }
+
+        $userTagNames = [];
+        foreach ($this->userTagService->loadTagsByUser($user) as $tag) {
+            $userTagNames[] = $tag->getName();
+        }
+
+        return in_array($limit->getValue(), $userTagNames, true);
     }
 
     /**

@@ -5,7 +5,8 @@ namespace CampaignBundle\Tests\Procedure;
 use CampaignBundle\Procedure\GetCampaignCategoryList;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
-use Tourze\JsonRPC\Core\Tests\AbstractProcedureTestCase;
+use Tourze\JsonRPC\Core\Result\ArrayResult;
+use Tourze\PHPUnitJsonRPC\AbstractProcedureTestCase;
 
 /**
  * 对应组件的测试类。
@@ -25,6 +26,7 @@ final class GetCampaignCategoryListTest extends AbstractProcedureTestCase
     {
         // 验证 execute 方法的返回类型
         $reflection = new \ReflectionMethod(GetCampaignCategoryList::class, 'execute');
-        $this->assertSame('array', (string) $reflection->getReturnType());
+        $returnType = $reflection->getReturnType();
+        $this->assertSame(ArrayResult::class, (string) $returnType);
     }
 }

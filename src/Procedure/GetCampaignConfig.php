@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace CampaignBundle\Procedure;
 
+use CampaignBundle\Param\GetCampaignConfigParam;
 use CampaignBundle\Repository\CampaignRepository;
 use Symfony\Bundle\SecurityBundle\Security;
 use Tourze\JsonRPC\Core\Attribute\MethodDoc;
 use Tourze\JsonRPC\Core\Attribute\MethodExpose;
-use Tourze\JsonRPC\Core\Attribute\MethodParam;
 use Tourze\JsonRPC\Core\Attribute\MethodTag;
+use Tourze\JsonRPC\Core\Contracts\RpcParamInterface;
+use Tourze\JsonRPC\Core\Result\ArrayResult;
 use Tourze\JsonRPC\Core\Exception\ApiException;
 use Tourze\JsonRPC\Core\Procedure\BaseProcedure;
 use Tourze\TextManageBundle\Service\TextFormatter;
@@ -19,15 +21,6 @@ use Tourze\TextManageBundle\Service\TextFormatter;
 #[MethodExpose(method: 'GetCampaignConfig')]
 class GetCampaignConfig extends BaseProcedure
 {
-    #[MethodParam(description: '活动代号')]
-    public string $campaignCode;
-
-    /**
-     * @var array<string, mixed>
-     */
-    #[MethodParam(description: '路由参数')]
-    public array $routerParams = [];
-
     public function __construct(
         private readonly CampaignRepository $campaignRepository,
         private readonly Security $security,
@@ -35,11 +28,13 @@ class GetCampaignConfig extends BaseProcedure
     ) {
     }
 
-    /** @return array<string, mixed> */
-    public function execute(): array
+    /**
+     * @phpstan-param GetCampaignConfigParam $param
+     */
+    public function execute(GetCampaignConfigParam|RpcParamInterface $param): ArrayResult
     {
         $campaign = $this->campaignRepository->findOneBy([
-            'code' => $this->campaignCode,
+            'code' => $param->campaignCode,
             'valid' => true,
         ]);
         if (null === $campaign) {
@@ -51,7 +46,7 @@ class GetCampaignConfig extends BaseProcedure
 
         // {webview:routerParams} 是特殊的占位符，代表当前路由的所有参数
         if (str_contains($result['visitUrl'], '{webview:routerParams}')) {
-            $result['visitUrl'] = str_replace('{webview:routerParams}', http_build_query($this->routerParams), $result['visitUrl']);
+            $result['visitUrl'] = str_replace('{webview:routerParams}', http_build_query($param->routerParams), $result['visitUrl']);
         }
 
         if (null !== $this->security->getUser()) {
@@ -74,6 +69,6 @@ class GetCampaignConfig extends BaseProcedure
             $result['shareConfig'] = $config;
         }
 
-        return $result;
+        return new ArrayResult($result);
     }
 }

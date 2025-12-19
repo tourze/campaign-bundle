@@ -5,15 +5,16 @@ declare(strict_types=1);
 namespace CampaignBundle\Procedure;
 
 use CampaignBundle\Entity\EventLog;
+use CampaignBundle\Param\GetCampaignEventLogsParam;
 use CampaignBundle\Repository\CampaignRepository;
 use CampaignBundle\Repository\EventLogRepository;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Tourze\JsonRPC\Core\Attribute\MethodDoc;
 use Tourze\JsonRPC\Core\Attribute\MethodExpose;
-use Tourze\JsonRPC\Core\Attribute\MethodParam;
 use Tourze\JsonRPC\Core\Attribute\MethodTag;
+use Tourze\JsonRPC\Core\Contracts\RpcParamInterface;
+use Tourze\JsonRPC\Core\Result\ArrayResult;
 use Tourze\JsonRPC\Core\Exception\ApiException;
 use Tourze\JsonRPC\Core\Procedure\BaseProcedure;
 use Tourze\JsonRPCPaginatorBundle\Procedure\PaginatorTrait;
@@ -26,25 +27,20 @@ class GetCampaignEventLogs extends BaseProcedure
 {
     use PaginatorTrait;
 
-    #[MethodParam(description: '活动ID')]
-    public string $campaignCode;
-
-    #[MethodParam(description: '事件')]
-    public string $event = '';
-
     public function __construct(
         private readonly CampaignRepository $campaignRepository,
         private readonly EventLogRepository $eventLogRepository,
         private readonly Security $security,
-        private readonly NormalizerInterface $normalizer,
     ) {
     }
 
-    /** @return array<string, mixed> */
-    public function execute(): array
+    /**
+     * @phpstan-param GetCampaignEventLogsParam $param
+     */
+    public function execute(GetCampaignEventLogsParam|RpcParamInterface $param): ArrayResult
     {
         $campaign = $this->campaignRepository->findOneBy([
-            'code' => $this->campaignCode,
+            'code' => $param->campaignCode,
             'valid' => true,
         ]);
         if (null === $campaign) {
@@ -57,12 +53,12 @@ class GetCampaignEventLogs extends BaseProcedure
             ->setParameter('user', $this->security->getUser())
             ->orderBy('a.id', 'DESC')
         ;
-        if ('' !== $this->event) {
+        if ('' !== $param->event) {
             $qb->andWhere('a.event = :event');
-            $qb->setParameter('event', $this->event);
+            $qb->setParameter('event', $param->event);
         }
 
-        return $this->fetchList($qb, $this->formatItem(...));
+        return new ArrayResult($this->fetchList($qb, $this->formatItem(...), null, $param));
     }
 
     /**
@@ -70,12 +66,9 @@ class GetCampaignEventLogs extends BaseProcedure
      */
     private function formatItem(EventLog $item): array
     {
-        $result = $this->normalizer->normalize($item, 'array', ['groups' => 'restful_read']);
-        if (!is_array($result)) {
-            throw new \InvalidArgumentException('Expected array result from normalizer');
-        }
-
-        /** @var array<string, mixed> $result */
-        return $result;
+        return new ArrayResult([
+            'event' => $item->getEvent(),
+            'params' => $item->getParams(),
+        ]);
     }
 }

@@ -3,8 +3,6 @@
 namespace CampaignBundle\Tests\Controller\Admin;
 
 use CampaignBundle\Controller\Admin\CampaignAttributeCrudController;
-use CampaignBundle\Entity\Attribute;
-use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
@@ -42,12 +40,8 @@ final class CampaignAttributeCrudControllerTest extends AbstractEasyAdminControl
         );
     }
 
-    /**
-     * @phpstan-return AbstractCrudController<Attribute>
-     */
-    protected function getControllerService(): AbstractCrudController
+    protected function getControllerService(): CampaignAttributeCrudController
     {
-        /** @phpstan-ignore-next-line */
         return self::getService(CampaignAttributeCrudController::class);
     }
 

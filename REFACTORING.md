@@ -93,7 +93,7 @@ src/
 ```json
 {
   "require": {
-    "symfony/framework-bundle": "^7.3",
+    "symfony/framework-bundle": "^7.4",
     "doctrine/orm": "^3.0",
     "symfony/security-bundle": "^7.3",
     "easycorp/easyadmin-bundle": "^4",

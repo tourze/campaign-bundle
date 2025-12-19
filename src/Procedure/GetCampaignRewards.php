@@ -6,6 +6,7 @@ namespace CampaignBundle\Procedure;
 
 use CampaignBundle\Entity\Reward;
 use CampaignBundle\Enum\AwardType;
+use CampaignBundle\Param\GetCampaignRewardsParam;
 use CampaignBundle\Repository\AwardRepository;
 use CampaignBundle\Repository\CampaignRepository;
 use CampaignBundle\Repository\RewardRepository;
@@ -13,8 +14,9 @@ use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Tourze\JsonRPC\Core\Attribute\MethodDoc;
 use Tourze\JsonRPC\Core\Attribute\MethodExpose;
-use Tourze\JsonRPC\Core\Attribute\MethodParam;
 use Tourze\JsonRPC\Core\Attribute\MethodTag;
+use Tourze\JsonRPC\Core\Contracts\RpcParamInterface;
+use Tourze\JsonRPC\Core\Result\ArrayResult;
 use Tourze\JsonRPC\Core\Exception\ApiException;
 use Tourze\JsonRPC\Core\Procedure\BaseProcedure;
 use Tourze\JsonRPCPaginatorBundle\Procedure\PaginatorTrait;
@@ -27,12 +29,6 @@ class GetCampaignRewards extends BaseProcedure
 {
     use PaginatorTrait;
 
-    #[MethodParam(description: '活动ID')]
-    public string $campaignCode;
-
-    #[MethodParam(description: '事件')]
-    public string $event = '';
-
     public function __construct(
         private readonly CampaignRepository $campaignRepository,
         private readonly RewardRepository $rewardRepository,
@@ -41,11 +37,13 @@ class GetCampaignRewards extends BaseProcedure
     ) {
     }
 
-    /** @return array<string, mixed> */
-    public function execute(): array
+    /**
+     * @phpstan-param GetCampaignRewardsParam $param
+     */
+    public function execute(GetCampaignRewardsParam|RpcParamInterface $param): ArrayResult
     {
         $campaign = $this->campaignRepository->findOneBy([
-            'code' => $this->campaignCode,
+            'code' => $param->campaignCode,
             'valid' => true,
         ]);
         if (null === $campaign) {
@@ -59,17 +57,17 @@ class GetCampaignRewards extends BaseProcedure
             ->setParameter('campaign', $campaign)
             ->orderBy('a.id', 'DESC')
         ;
-        if ('' !== $this->event) {
+        if ('' !== $param->event) {
             $award = $this->awardRepository->findBy([
                 'campaign' => $campaign,
-                'event' => $this->event,
+                'event' => $param->event,
             ]);
 
             $qb->andWhere('a.award in (:award)');
             $qb->setParameter('award', $award);
         }
 
-        return $this->fetchList($qb, $this->formatItem(...));
+        return new ArrayResult($this->fetchList($qb, $this->formatItem(...), null, $param));
     }
 
     /** @return array<string, mixed> */
@@ -78,6 +76,6 @@ class GetCampaignRewards extends BaseProcedure
         $re = $reward->retrieveApiArray();
         $re['valid'] = false;
 
-        return $re;
+        return new ArrayResult($re);
     }
 }

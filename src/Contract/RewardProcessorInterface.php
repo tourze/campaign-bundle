@@ -16,27 +16,6 @@ use Symfony\Component\Security\Core\User\UserInterface;
  * 所有奖励类型的处理器必须实现此接口。
  * 通过 Symfony 的 Tagged Services 机制自动注册到 RewardProcessorRegistry。
  *
- * 实现示例：
- * ```php
- * class CouponRewardProcessor implements RewardProcessorInterface
- * {
- *     public function supports(AwardType $type): bool
- *     {
- *         return AwardType::COUPON === $type;
- *     }
- *
- *     public function process(UserInterface $user, Award $award, Reward $reward): void
- *     {
- *         // 处理优惠券发放逻辑
- *     }
- *
- *     public function getPriority(): int
- *     {
- *         return 0;
- *     }
- * }
- * ```
- *
  * @see RewardProcessorRegistry
  */
 interface RewardProcessorInterface
