@@ -45,7 +45,7 @@
     "tourze/json-rpc-log-bundle": "2.0.*",
     "tourze/json-rpc-paginator-bundle": "2.0.*",
     "tourze/symfony-aop-doctrine-bundle": "1.0.*",
-    "tourze/symfony-cron-job-bundle": "1.1.*",
+    "tourze/symfony-cron-job-bundle": "1.2.*",
     "tourze/symfony-ecol-bundle": "1.0.*",
     "tourze/text-manage-bundle": "1.0.*",
     "tourze/user-tag-contracts": "1.0.*"
